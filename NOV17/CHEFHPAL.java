@@ -8,6 +8,7 @@ class Main{
     static final double eps = 1e-6;
     static final double pi = Math.PI;
     static final long inf = Long.MAX_VALUE / 2;
+    boolean ans=false;
 
     // .......static class
   static class Pair{
@@ -62,15 +63,16 @@ class Main{
         }
         else if(a==2)
         {
-            StringBuffer sb=new StringBuffer("aba");
+            StringBuffer sbs=new StringBuffer("ab");
             if(n<=2){
               System.out.print("1 ");
               for (int i=0;i<n ;i++ ) {
-                System.out.print(sb.charAt(i));
+                System.out.print(sbs.charAt(i));
               }
             }
             else{
-                if(n==3){
+
+               if(n==3){
                   System.out.println("2 aab");
                   continue;
                 }
@@ -79,29 +81,50 @@ class Main{
                   System.out.println("2 aabb");
                   continue;
                 }
-                int len=3;
-                int l=1,r=0;
-                while(len!=n){
-                if(l<=r){
-                  sb.insert(0,"a");
-                  l++;
-                  len++;
-                }
-                else
+                if(n==5)
                 {
-                    sb.insert(sb.length(),"b");
-                    r++;
-                    len++;
+                  System.out.println("3 aaabb");
+                  continue;
                 }
-            }
-            System.out.print(Math.max(3,Math.max(l,r))+" ");
-            System.out.print(sb.toString());
-          }
+                if(n==6)
+                {
+                  System.out.println("3 aababb");
+                  continue;
+                }
 
+                if(n==7)
+                {
+                  System.out.println("3 aaababb");
+                  continue;
+                }
+
+                if(n==8)
+                {
+                  System.out.println("3 aaababbb");
+                  continue;
+                }
+                int num=n-8;
+                int times=num/6;
+                StringBuffer sb=new StringBuffer("aaaababb");
+                StringBuffer common=new StringBuffer("aababb");
+                System.out.print("4 ");
+                for (int i=0;i<times ;i++ ) {
+                   sb.append(common);
+                }
+                int rem=num%6;
+                for (int i=0;i<rem ;i++ ) {
+                  sb.append(common.charAt(i));
+                }
+                System.out.print(sb.toString());
+
+
+                
+               
+
+             }
         }
         else{
             System.out.print("1 ");
-            
             int num=0;
             for (int i=0;i<n ;i++ ) {
               char ch=(char)(97+num);
