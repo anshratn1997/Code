@@ -1,26 +1,13 @@
-
-/*
-add code til 04/10/2018
-Meet in middle is a kind of divide and conquer problem but it is a little bit different from dac.
-This algorithm basically  devide the whole array in two parts only and perform required operation on individually.
-In third step this algorthim sort the one array and second array is taken to select elemnts and search in first array.
-This third step iterate over size of it and finaly max value is gets returned.
-
- problem-- http://codeforces.com/contest/888/problem/E
- 
-*/
 import java.io.*;
 import java.util.*;
 import java.math.*;
 //public 
 class Main{
     //static variable
-    static int mod = (int) 1e9 + 7;
+    static final int mod = (int) 1e9 + 7;
     static final double eps = 1e-6;
     static final double pi = Math.PI;
     static final long inf = Long.MAX_VALUE / 2;
-    static int X[]=new int[2000005];
-    static int[] Y=new int[2000005];
 
     // .......static class
   static class Pair{
@@ -57,17 +44,39 @@ class Main{
     try{
        
         br=new BufferedReader(new InputStreamReader(System.in));
-        out=new PrintWriter(System.out);
-      int t=1;
-     // t=ii();
+      // br=new BufferedReader(new FileReader("input.txt"));
+        out=new PrintWriter("out.txt");
+        int t=1;
+       t=ii();
       while(t-->0){
 
         //........solution start
-        int[] tt=iint();
-        int[] a=iint();
-        int n=tt[0];
-        mod=tt[1];
-        System.out.println(solveSubsetSum(a,n));
+
+        long n=ii();
+        long temp=n;
+        long ans=0;
+        long num=0;
+        long pl=1;
+        while(temp>0){
+           long d=temp%10;
+           num+=d*(long)Math.pow(10,pl-1);
+
+           if(d % 2==1){
+            long incr=(d+1)*(long)Math.pow(10,pl-1)-num;
+            long nn=0;
+             for(long i=1;i<pl;i++){
+              nn+=8L*(long)Math.pow(10,i-1);
+             }
+             nn+=(d-1)*(long)Math.pow(10,pl-1);
+            long decr=num-nn;
+            ans=Math.min(incr,decr);
+            System.out.println("nn and decr"+nn+" "+incr);
+           }
+            System.out.println(ans);
+           pl++;
+           temp/=10;
+        }
+        System.out.println(ans);
 
 
 
@@ -94,69 +103,6 @@ class Main{
 
 
   // ...............required method.
-
-void calcsubarray(int a[], int x[], int n, int c)
-{
-    for (int i=0; i<(1<<n); i++)
-    {
-        long  s = 0L;
-        for (int j=0; j<n; j++){
-            if ((i & (1<<j))>0){
-                s += a[j+c];
-                s=s%mod;
-              }
-        }
-        x[i] = (int)(s%mod);
-    }
-}
- 
-int solveSubsetSum(int a[], int n)
-{
-    calcsubarray(a, X, n/2, 0);
-    calcsubarray(a, Y, n-n/2, n/2);
-
-    int max=0;
-
-    int size_X = 1<<(n/2);
-    int size_Y = 1<<(n-n/2);
-
-    Arrays.sort(Y,0,size_Y-1);
-    
-    for (int i=0; i<size_X; i++)
-    {
-        if (X[i] <= mod)
-        {
-            // lower_bound() returns the first address
-            // which has value greater than or equal to
-            // S-X[i].
-            int p = upperBound(Y, size_Y, mod-X[i]-1);
- 
-            // If S-X[i] was not in array Y then decrease
-            // p by 1
-            
-            if (p == size_Y || Y[p] != (mod-X[i]-1))
-                p--;
-           p=Math.max(p,0);
-           max=Math.max(max,Y[p]+X[i]);
-        }
-    }
-    return max;
-}
-public int upperBound(int[] array, int length, int value) {
-        int low = 0;
-        int high = length;
-        while (low < high) {
-            final int mid = (low + high) / 2;
-            if (value >= array[mid]) {
-                low = mid + 1;
-            } else {
-                high = mid;
-            }
-        }
-        return low;
-    }
-
- 
 
 
 

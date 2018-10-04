@@ -1,31 +1,42 @@
-
-/*
-add code til 04/10/2018
-Meet in middle is a kind of divide and conquer problem but it is a little bit different from dac.
-This algorithm basically  devide the whole array in two parts only and perform required operation on individually.
-In third step this algorthim sort the one array and second array is taken to select elemnts and search in first array.
-This third step iterate over size of it and finaly max value is gets returned.
-
- problem-- http://codeforces.com/contest/888/problem/E
- 
-*/
 import java.io.*;
 import java.util.*;
 import java.math.*;
 //public 
 class Main{
     //static variable
-    static int mod = (int) 1e9 + 7;
+    static final int mod = (int) 1e9 + 7;
     static final double eps = 1e-6;
     static final double pi = Math.PI;
     static final long inf = Long.MAX_VALUE / 2;
-    static int X[]=new int[2000005];
-    static int[] Y=new int[2000005];
+    static boolean visit[][]=null;
+   
+    static int[] dx={-1,0,1,0};
+    static int[] dy={0,1,0,-1};
+   // static ArrayList[] graph=null;
+    static ArrayList<Pair> al=null; 
+    static int[][] arr=null;
+    
+
 
     // .......static class
   static class Pair{
+      int key,ii,jj;
+      Pair(int key,int ii,int jj){
+        this.key=key;
+        this.ii=ii;
+        this.jj=jj;
+      }
+      int Key(){
+        return key;
+      }
+      int XX(){
+        return ii;
+      }
+      int YY(){return jj;}
+  }
+static class Pair1{
       int key,value;
-      Pair(int key,int value){
+      Pair1(int key,int value){
         this.key=key;
         this.value=value;
       }
@@ -48,7 +59,7 @@ class Main{
   
     BufferedReader br;
     PrintWriter out;
-    public static void main(String[] args) {
+    public static void main(String[] args){
     new Main().main1();
  
   }
@@ -59,19 +70,52 @@ class Main{
         br=new BufferedReader(new InputStreamReader(System.in));
         out=new PrintWriter(System.out);
       int t=1;
-     // t=ii();
+      t=ii();
       while(t-->0){
 
-        //........solution start
+        //.
+        // .......solution start
         int[] tt=iint();
-        int[] a=iint();
-        int n=tt[0];
-        mod=tt[1];
-        System.out.println(solveSubsetSum(a,n));
+        int n=tt[0],m=tt[1];
+        visit=new boolean[n][m];
+        for (int i=0;i<n ;i++ ) {
+          Arrays.fill(visit[i],false);
+        }
+        arr=iim(n,m);
+        // arr=new int[n][m];
+        // for (int i=0;i<n; i++) {
+        //   for (int j=0;j<m ;j++ ) {
+        //      arr[i][j]=1;
+        //   }
+        // }
+        int ct=0;
+        al=new ArrayList<>();
+        for (int i=0;i<n ;i++ ) {
+           for (int j=0;j<m ;j++ ) {
+              al.add(new Pair(arr[i][j],i,j));
+           }
+        }
+        Collections.sort(al,new mycomparator());
+     
+        for (int i=n*m-1;i>=0 ;i-- ) {
+           Pair p=al.get(i);
+           int x=p.XX();
+           int y=p.YY();
+
+           if(!visit[x][y])
+             {
+                ct++;
+
+                bfs(x,y,n,m);
+
+             }
+
+        }
+        out.println(ct);
 
 
 
-  
+    
         
 
 
@@ -94,69 +138,41 @@ class Main{
 
 
   // ...............required method.
+  boolean valid(int i,int j,int n,int m){
+    if(i<n && i>=0 && j<m && j>=0)
+      return true;
+    return false;
+  }
+  boolean move(int x1,int y1,int x2,int y2){
+     if(arr[x1][y1]>=arr[x2][y2])
+       return true;
+     return false;
 
-void calcsubarray(int a[], int x[], int n, int c)
-{
-    for (int i=0; i<(1<<n); i++)
-    {
-        long  s = 0L;
-        for (int j=0; j<n; j++){
-            if ((i & (1<<j))>0){
-                s += a[j+c];
-                s=s%mod;
+  }
+
+  void bfs(int i,int j,int n,int m){
+     Queue<Pair1> q=new LinkedList<>();
+     q.add(new Pair1(i,j));
+     visit[i][j]=true;
+     while(!q.isEmpty()){
+       Pair1 pin=q.peek();
+       q.poll();
+       int x1=pin.Key(),y1=pin.Value();
+       for (int l=0;l<4 ;l++ ) {
+          int x2=x1+dx[l],y2=y1+dy[l];
+          if(valid(x2,y2,n,m)){
+             if(move(x1,y1,x2,y2)){
+                if(!visit[x2][y2]){
+                visit[x2][y2]=true;
+                 //System.out.println("x and y "+x2+" "+y2); 
+                q.add(new Pair1(x2,y2));
+                }
               }
-        }
-        x[i] = (int)(s%mod);
-    }
-}
- 
-int solveSubsetSum(int a[], int n)
-{
-    calcsubarray(a, X, n/2, 0);
-    calcsubarray(a, Y, n-n/2, n/2);
-
-    int max=0;
-
-    int size_X = 1<<(n/2);
-    int size_Y = 1<<(n-n/2);
-
-    Arrays.sort(Y,0,size_Y-1);
-    
-    for (int i=0; i<size_X; i++)
-    {
-        if (X[i] <= mod)
-        {
-            // lower_bound() returns the first address
-            // which has value greater than or equal to
-            // S-X[i].
-            int p = upperBound(Y, size_Y, mod-X[i]-1);
- 
-            // If S-X[i] was not in array Y then decrease
-            // p by 1
-            
-            if (p == size_Y || Y[p] != (mod-X[i]-1))
-                p--;
-           p=Math.max(p,0);
-           max=Math.max(max,Y[p]+X[i]);
-        }
-    }
-    return max;
-}
-public int upperBound(int[] array, int length, int value) {
-        int low = 0;
-        int high = length;
-        while (low < high) {
-            final int mid = (low + high) / 2;
-            if (value >= array[mid]) {
-                low = mid + 1;
-            } else {
-                high = mid;
-            }
-        }
-        return low;
+          }
+       }
     }
 
- 
+ }
 
 
 

@@ -1,26 +1,19 @@
-
-/*
-add code til 04/10/2018
-Meet in middle is a kind of divide and conquer problem but it is a little bit different from dac.
-This algorithm basically  devide the whole array in two parts only and perform required operation on individually.
-In third step this algorthim sort the one array and second array is taken to select elemnts and search in first array.
-This third step iterate over size of it and finaly max value is gets returned.
-
- problem-- http://codeforces.com/contest/888/problem/E
- 
-*/
 import java.io.*;
 import java.util.*;
 import java.math.*;
 //public 
 class Main{
     //static variable
-    static int mod = (int) 1e9 + 7;
+    static final int mod = (int) 1e9 + 7;
     static final double eps = 1e-6;
     static final double pi = Math.PI;
     static final long inf = Long.MAX_VALUE / 2;
-    static int X[]=new int[2000005];
-    static int[] Y=new int[2000005];
+    static int[][] dp=null;
+    static  ArrayList<Integer> av=null;
+   
+    static int n=0;
+    static ArrayList[] ts=new ArrayList[101];
+    static int N=0;
 
     // .......static class
   static class Pair{
@@ -58,18 +51,41 @@ class Main{
        
         br=new BufferedReader(new InputStreamReader(System.in));
         out=new PrintWriter(System.out);
-      int t=1;
-     // t=ii();
+        int t=1;
+       // t=ii();
       while(t-->0){
 
         //........solution start
-        int[] tt=iint();
-        int[] a=iint();
-        int n=tt[0];
-        mod=tt[1];
-        System.out.println(solveSubsetSum(a,n));
+         n=ii();
+        ArrayList[] gp=new ArrayList[n];
+        N=(int)Math.pow(2,n);
+        dp=new int[N][101];
+
+       
+        for (int i=0;i<N ;i++) {
+          Arrays.fill(dp[i],-1);
+        }
+        for (int i=0;i<n ;i++ ) {
+             int[] line=iint();
+            gp[i]=new ArrayList<>();
+            for (int j=0;j<line.length ;j++ ) {
+               gp[i].add(line[j]);
+            }
+        }
+
+        for (int i=1;i<101 ;i++ ) {  
+        ts[i]=new ArrayList<>();
+      }
+     
+      for (int i=0;i<n ;i++ ) {
+         for (int j=0;j<gp[i].size() ;j++ ) {   
+           ts[(int)gp[i].get(j)].add(i+1);
+         }
+      }
+      System.out.println(findpath(0,new HashSet<Integer>()));
 
 
+      
 
   
         
@@ -94,69 +110,46 @@ class Main{
 
 
   // ...............required method.
+  int findpath(int mask,HashSet<Integer> set){
 
-void calcsubarray(int a[], int x[], int n, int c)
-{
-    for (int i=0; i<(1<<n); i++)
-    {
-        long  s = 0L;
-        for (int j=0; j<n; j++){
-            if ((i & (1<<j))>0){
-                s += a[j+c];
-                s=s%mod;
-              }
-        }
-        x[i] = (int)(s%mod);
-    }
+     int ret=0;
+     if(mask==N-1)
+      return 1;
+   
+      for(int i=0;i<av.size();i++ ) {
+           int tsnum=av.get(i);
+         if(set.contains(tsnum))
+          continue;
+         for (int j=0;j<ts[tsnum].size() ;j++ ) {
+             if((mask & (1 << (int)ts[tsnum].get(j)))==0){
+             if(v[(mask | 1 << (int)ts[tsnum].get(j))][tsnum]){
+               ret+=dp[(mask | 1 << (int)ts[tsnum].get(j))][tsnum];
+
+             }
+             else{
+              set.add(tsnum);
+              ret+=findpath(mask | 1 << (int)ts[tsnum].get(j),set);
+              v[(mask | 1 << (int)ts[tsnum].get(j))][tsnum]=true;
+             }
+               
+          }
+
+       }
+   }
+
+   return ret;
+
+
+  }
+  int countSetBits(int n){
+  int count = 0;
+  while (n>0)
+  {
+    count += n & 1;
+    n >>= 1;
+  }
+  return count;
 }
- 
-int solveSubsetSum(int a[], int n)
-{
-    calcsubarray(a, X, n/2, 0);
-    calcsubarray(a, Y, n-n/2, n/2);
-
-    int max=0;
-
-    int size_X = 1<<(n/2);
-    int size_Y = 1<<(n-n/2);
-
-    Arrays.sort(Y,0,size_Y-1);
-    
-    for (int i=0; i<size_X; i++)
-    {
-        if (X[i] <= mod)
-        {
-            // lower_bound() returns the first address
-            // which has value greater than or equal to
-            // S-X[i].
-            int p = upperBound(Y, size_Y, mod-X[i]-1);
- 
-            // If S-X[i] was not in array Y then decrease
-            // p by 1
-            
-            if (p == size_Y || Y[p] != (mod-X[i]-1))
-                p--;
-           p=Math.max(p,0);
-           max=Math.max(max,Y[p]+X[i]);
-        }
-    }
-    return max;
-}
-public int upperBound(int[] array, int length, int value) {
-        int low = 0;
-        int high = length;
-        while (low < high) {
-            final int mid = (low + high) / 2;
-            if (value >= array[mid]) {
-                low = mid + 1;
-            } else {
-                high = mid;
-            }
-        }
-        return low;
-    }
-
- 
 
 
 

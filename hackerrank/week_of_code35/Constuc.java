@@ -1,26 +1,15 @@
-
-/*
-add code til 04/10/2018
-Meet in middle is a kind of divide and conquer problem but it is a little bit different from dac.
-This algorithm basically  devide the whole array in two parts only and perform required operation on individually.
-In third step this algorthim sort the one array and second array is taken to select elemnts and search in first array.
-This third step iterate over size of it and finaly max value is gets returned.
-
- problem-- http://codeforces.com/contest/888/problem/E
- 
-*/
 import java.io.*;
 import java.util.*;
 import java.math.*;
 //public 
 class Main{
     //static variable
-    static int mod = (int) 1e9 + 7;
+    static final long MOD = (int) 1e9 + 9;
     static final double eps = 1e-6;
     static final double pi = Math.PI;
     static final long inf = Long.MAX_VALUE / 2;
-    static int X[]=new int[2000005];
-    static int[] Y=new int[2000005];
+    static long[][] ncr=new long[1005][1005];
+
 
     // .......static class
   static class Pair{
@@ -63,13 +52,9 @@ class Main{
       while(t-->0){
 
         //........solution start
-        int[] tt=iint();
-        int[] a=iint();
-        int n=tt[0];
-        mod=tt[1];
-        System.out.println(solveSubsetSum(a,n));
-
-
+        NCR();
+      
+      
 
   
         
@@ -94,69 +79,52 @@ class Main{
 
 
   // ...............required method.
-
-void calcsubarray(int a[], int x[], int n, int c)
-{
-    for (int i=0; i<(1<<n); i++)
-    {
-        long  s = 0L;
-        for (int j=0; j<n; j++){
-            if ((i & (1<<j))>0){
-                s += a[j+c];
-                s=s%mod;
-              }
+   long modInverse(long a, long m) {
+        return pow(a,m-2,m);
+    } 
+     long pow(long a, long b, long MOD) {
+        long x = 1, y = a;
+        while(b > 0) {
+            if(b%2 == 1) {
+                 x=(x*y);
+                 if(x>=MOD) 
+                     x%=MOD;
+             }
+             y = (y*y);
+            if(y>=MOD) 
+                y%=MOD;
+             b /= 2;
         }
-        x[i] = (int)(s%mod);
+        return x%MOD;
     }
-}
- 
-int solveSubsetSum(int a[], int n)
-{
-    calcsubarray(a, X, n/2, 0);
-    calcsubarray(a, Y, n-n/2, n/2);
-
-    int max=0;
-
-    int size_X = 1<<(n/2);
-    int size_Y = 1<<(n-n/2);
-
-    Arrays.sort(Y,0,size_Y-1);
-    
-    for (int i=0; i<size_X; i++)
-    {
-        if (X[i] <= mod)
-        {
-            // lower_bound() returns the first address
-            // which has value greater than or equal to
-            // S-X[i].
-            int p = upperBound(Y, size_Y, mod-X[i]-1);
- 
-            // If S-X[i] was not in array Y then decrease
-            // p by 1
-            
-            if (p == size_Y || Y[p] != (mod-X[i]-1))
-                p--;
-           p=Math.max(p,0);
-           max=Math.max(max,Y[p]+X[i]);
-        }
+  
+  void NCR(){
+    ncr[0][0]=1;
+    ncr[1][1]=1;
+    for (int k=2;k<1005 ;k++ ) {
+      ncr[k][0]=1;
     }
-    return max;
-}
-public int upperBound(int[] array, int length, int value) {
-        int low = 0;
-        int high = length;
-        while (low < high) {
-            final int mid = (low + high) / 2;
-            if (value >= array[mid]) {
-                low = mid + 1;
-            } else {
-                high = mid;
+    for (int i=2;i<1005 ;i++ ) {
+       int j=1;
+       for (j=1;j<=i/2;j++ ) {
+               long v1=(ncr[i][j-1]*((1L*(i-j+1))%MOD))%MOD;
+               long v2=modInverse(j,MOD)%MOD;
+               ncr[i][j]=(v1*1L*v2)%MOD;
+
             }
-        }
-        return low;
-    }
+            int l=0;
+        if(i%2==0)
+          l=i/2-1;
+        else
+          l=i/2;
+       for (int k=j;k<=i && l>=0;k++,l-- ) {
+               ncr[i][k]=ncr[i][l];
+          }     
 
- 
+
+     }
+
+  }
 
 
 

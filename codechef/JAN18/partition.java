@@ -1,26 +1,13 @@
-
-/*
-add code til 04/10/2018
-Meet in middle is a kind of divide and conquer problem but it is a little bit different from dac.
-This algorithm basically  devide the whole array in two parts only and perform required operation on individually.
-In third step this algorthim sort the one array and second array is taken to select elemnts and search in first array.
-This third step iterate over size of it and finaly max value is gets returned.
-
- problem-- http://codeforces.com/contest/888/problem/E
- 
-*/
 import java.io.*;
 import java.util.*;
 import java.math.*;
 //public 
 class Main{
     //static variable
-    static int mod = (int) 1e9 + 7;
+    static final int mod = (int) 1e9 + 7;
     static final double eps = 1e-6;
     static final double pi = Math.PI;
     static final long inf = Long.MAX_VALUE / 2;
-    static int X[]=new int[2000005];
-    static int[] Y=new int[2000005];
 
     // .......static class
   static class Pair{
@@ -59,17 +46,82 @@ class Main{
         br=new BufferedReader(new InputStreamReader(System.in));
         out=new PrintWriter(System.out);
       int t=1;
-     // t=ii();
+      t=ii();
       while(t-->0){
 
         //........solution start
-        int[] tt=iint();
-        int[] a=iint();
-        int n=tt[0];
-        mod=tt[1];
-        System.out.println(solveSubsetSum(a,n));
+        int xn[]=iint();
+        int x=xn[0],n=xn[1];
+        int tt=n;
+        long s1=0,s2=0;
+        // s1=(n*(n+1))/2-x;
+        // if(s1%2!=0){out.println("impossible");continue;}
+        // s1=0;
+        int[] a=new int[n+1];
+        ArrayList<Integer> al1=new ArrayList<>();
+        ArrayList<Integer> al2=new ArrayList<>();
+        Arrays.fill(a,-1);
+        while(tt>0){
+          if(tt==x){
+            a[tt]=2;
+            tt--;
+            continue;
+          }
+          if(s1>s2){
+             s2+=tt;a[tt]=1;al2.add(tt);}
+          else{
+            s1+=tt;a[tt]=0;al1.add(tt);
+          }
+          tt--;
+        }
+        if(al1.size()==0 || al2.size()==0)
+          {out.println("impossible");continue;}
+        if(s1==s2)
+           printarr(a);
+      else{
+         if(s1>s2 && s1-s2==2){
+          int i=0,j=0;
+          boolean find=false;
+            while(i<al1.size() && j<al2.size()){
+              if(al1.get(i)>al2.get(j) && al1.get(i)-al2.get(j)==1)
+              {
+                a[al1.get(i)]=1;a[al2.get(j)]=0;
+                 printarr(a);
+                 find=true;
+                break;
+              }
+              else{i++;j++;}
+            }
+            if(!find)
+              out.println("impossible");
 
 
+           
+         }
+         else if(s2>s1 && s2-s1==2){
+          int i=0,j=0;
+          boolean find=false;
+            while(i<al1.size() && j<al2.size()){
+              if(al1.get(i)<al2.get(j) && al2.get(j)-al1.get(i)==1)
+              {
+                a[al1.get(i)]=1;a[al2.get(j)]=0;
+                find=true;
+              printarr(a);
+
+                break;
+              }
+              else{i++;j++;}
+            }
+            if(!find)
+              out.println("impossible");
+         }
+
+         else
+          out.println("impossible");
+
+        
+        }
+       
 
   
         
@@ -94,69 +146,14 @@ class Main{
 
 
   // ...............required method.
-
-void calcsubarray(int a[], int x[], int n, int c)
-{
-    for (int i=0; i<(1<<n); i++)
-    {
-        long  s = 0L;
-        for (int j=0; j<n; j++){
-            if ((i & (1<<j))>0){
-                s += a[j+c];
-                s=s%mod;
-              }
-        }
-        x[i] = (int)(s%mod);
+  void printarr(int[] a)
+  {
+    for (int i=1;i<a.length ;i++ ) {
+      
+    out.print(a[i]);
     }
-}
- 
-int solveSubsetSum(int a[], int n)
-{
-    calcsubarray(a, X, n/2, 0);
-    calcsubarray(a, Y, n-n/2, n/2);
-
-    int max=0;
-
-    int size_X = 1<<(n/2);
-    int size_Y = 1<<(n-n/2);
-
-    Arrays.sort(Y,0,size_Y-1);
-    
-    for (int i=0; i<size_X; i++)
-    {
-        if (X[i] <= mod)
-        {
-            // lower_bound() returns the first address
-            // which has value greater than or equal to
-            // S-X[i].
-            int p = upperBound(Y, size_Y, mod-X[i]-1);
- 
-            // If S-X[i] was not in array Y then decrease
-            // p by 1
-            
-            if (p == size_Y || Y[p] != (mod-X[i]-1))
-                p--;
-           p=Math.max(p,0);
-           max=Math.max(max,Y[p]+X[i]);
-        }
-    }
-    return max;
-}
-public int upperBound(int[] array, int length, int value) {
-        int low = 0;
-        int high = length;
-        while (low < high) {
-            final int mid = (low + high) / 2;
-            if (value >= array[mid]) {
-                low = mid + 1;
-            } else {
-                high = mid;
-            }
-        }
-        return low;
-    }
-
- 
+    out.println();
+  }
 
 
 

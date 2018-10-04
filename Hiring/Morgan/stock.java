@@ -1,26 +1,16 @@
-
-/*
-add code til 04/10/2018
-Meet in middle is a kind of divide and conquer problem but it is a little bit different from dac.
-This algorithm basically  devide the whole array in two parts only and perform required operation on individually.
-In third step this algorthim sort the one array and second array is taken to select elemnts and search in first array.
-This third step iterate over size of it and finaly max value is gets returned.
-
- problem-- http://codeforces.com/contest/888/problem/E
- 
-*/
 import java.io.*;
 import java.util.*;
 import java.math.*;
 //public 
 class Main{
     //static variable
-    static int mod = (int) 1e9 + 7;
+    static final int mod = (int) 1e9 + 7;
     static final double eps = 1e-6;
     static final double pi = Math.PI;
     static final long inf = Long.MAX_VALUE / 2;
-    static int X[]=new int[2000005];
-    static int[] Y=new int[2000005];
+    static ArrayList<Pair> al=new ArrayList<>();
+    static long tree[]=new long[5*100001];
+    long ans[]=null;
 
     // .......static class
   static class Pair{
@@ -63,12 +53,48 @@ class Main{
       while(t-->0){
 
         //........solution start
-        int[] tt=iint();
-        int[] a=iint();
-        int n=tt[0];
-        mod=tt[1];
-        System.out.println(solveSubsetSum(a,n));
+        int n=ii();
+        int[] w=iint();
+        int l[]=iint();
+        int[] r=iint();
+        
+         ans=new long[n+1];
+        for (int i=0;i<n ;i++ ) {
+          int lt=i-l[i]-1;
+          al.add(new Pair(lt,i));
+        }
+        Collections.sort(al,new mycomparator());
+        for (int i=0;i<n ;i++ ) {
+          ans[i]=w[i];
+        }
+        build(1,0,n-1);
 
+        ans[n-1]=w[n-1];
+        long max=w[n-1];
+        Pair pq=al.get(n-1);
+        for (int i=n-2;i>=0 ;i-- ) {
+          Pair p=al.get(i);
+          ans[i]=w[i];
+          int right=i+r[i]+1;
+          int ind_up=upperBound(n,i+right);
+          int ind_low=upperBound(n,i-1);
+          long lm=query(1,0,n-1,ind_low,Math.min(ind_up,n-1));
+    
+          System.out.println(lm);
+          ans[i]=Math.max(lm+ans[i],ans[i]);
+
+          update(1,0,n-1,i,ans[i]);
+
+        }
+       
+        for (int i=0;i<n ;i++ ) {
+          System.out.print(ans[i]+" ");
+         max=Math.max(max,ans[i]);
+        }
+        System.out.println(max);
+
+              
+         
 
 
   
@@ -94,60 +120,79 @@ class Main{
 
 
   // ...............required method.
-
-void calcsubarray(int a[], int x[], int n, int c)
+void build(int node, int start, int end)
 {
-    for (int i=0; i<(1<<n); i++)
+    if(start == end)
     {
-        long  s = 0L;
-        for (int j=0; j<n; j++){
-            if ((i & (1<<j))>0){
-                s += a[j+c];
-                s=s%mod;
-              }
-        }
-        x[i] = (int)(s%mod);
+        // Leaf node will have a single element
+      //System.out.println("start "+start);
+      Pair pp=al.get(start);
+
+        tree[node] = ans[pp.Value()];
+    }
+    else
+    {
+        int mid = (start + end) / 2;
+        // Recurse on the left child
+        build(2*node, start, mid);
+        // Recurse on the right child
+        build(2*node+1, mid+1, end);
+        // Internal node will have the sum of both of its children
+        tree[node] = Math.max(tree[2*node],tree[2*node+1]);
     }
 }
- 
-int solveSubsetSum(int a[], int n)
+void update(int node, int start, int end, int idx, long val)
 {
-    calcsubarray(a, X, n/2, 0);
-    calcsubarray(a, Y, n-n/2, n/2);
-
-    int max=0;
-
-    int size_X = 1<<(n/2);
-    int size_Y = 1<<(n-n/2);
-
-    Arrays.sort(Y,0,size_Y-1);
-    
-    for (int i=0; i<size_X; i++)
+    if(start == end)
     {
-        if (X[i] <= mod)
+        // Leaf node
+        Pair pp=al.get(start);
+        System.out.println("start and value "+start+" "+pp.Value());
+        tree[node]=ans[pp.Value()];
+    }
+    else
+    {
+        int mid = (start + end) / 2;
+        if(start <= idx && idx <= mid)
         {
-            // lower_bound() returns the first address
-            // which has value greater than or equal to
-            // S-X[i].
-            int p = upperBound(Y, size_Y, mod-X[i]-1);
- 
-            // If S-X[i] was not in array Y then decrease
-            // p by 1
-            
-            if (p == size_Y || Y[p] != (mod-X[i]-1))
-                p--;
-           p=Math.max(p,0);
-           max=Math.max(max,Y[p]+X[i]);
+            // If idx is in the left child, recurse on the left child
+            update(2*node, start, mid, idx, val);
         }
+        else
+        {
+            // if idx is in the right child, recurse on the right child
+            update(2*node+1, mid+1, end, idx, val);
+        }
+        // Internal node will have the sum of both of its children
+        tree[node] = Math.max(tree[2*node],tree[2*node+1]);
     }
-    return max;
 }
-public int upperBound(int[] array, int length, int value) {
+long query(int node, int start, int end, int l, int r)
+{
+    if(r < start || end < l)
+    {
+        // range represented by a node is completely outside the given range
+        return 0;
+    }
+    if(l <= start && end <= r)
+    {
+        // range represented by a node is completely inside the given range
+        return tree[node];
+    }
+    // range represented by a node is partially inside and partially outside the given range
+    int mid = (start + end) / 2;
+    long p1 = query(2*node, start, mid, l, r);
+    long p2 = query(2*node+1, mid+1, end, l, r);
+    return Math.max(p1,p2);
+}
+
+public  int upperBound(int length, int value) {
         int low = 0;
         int high = length;
         while (low < high) {
             final int mid = (low + high) / 2;
-            if (value >= array[mid]) {
+            Pair p=al.get(mid);
+            if (value >=p.Key()) {
                 low = mid + 1;
             } else {
                 high = mid;
@@ -155,8 +200,6 @@ public int upperBound(int[] array, int length, int value) {
         }
         return low;
     }
-
- 
 
 
 

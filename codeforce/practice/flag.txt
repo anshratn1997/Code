@@ -1,0 +1,34 @@
+String country_name={"Albania","Algeria,"Argentina","Australia",
+"Austria","Azerbaijan","Bangladesh","Belgium","Brazil","Bulgaria","Cambodia","China","Colombia","Costa-Rice","Crotian","Cuba","Czech-Republic","Denmark","Egypt","England","Finland","France","Georgia","Germany","Greece","Hungry","India","Israel","Japan","Kazakhstan","Lithuania","Luxembourg","Malaysia","Morocco","New-Zealand","Pakistsan","Paraguay","Peru","Philippines","Poland","Portugal","Qatar","Romania","Saudi-Arabia","Serbia","Singapore","South-Africa","Spain","Sri-Lanka","Seweden","Switzerland","Taiwan","Thailand","Ukraine","United-Arab-Emirates","United-Kingdom","United-States","Uruguay","Vietnam"}
+
+R.drawable.Albania               R.drawable.Kazaknstan
+R.drawable.Algeria               R.drawable.Lithuania
+R.drawable.Argentina              R.drawable.Luxembourg
+R.drawable.Australia             R.drawable.Malaysia
+R.drawable.Austria               R.drawable.Morocco
+R.drawable.Azerbaijan            R.drawable.New-Zealand
+R.drawable.Bangladesh             R.drawable.Pakistan
+R.drawable.Belgium               R.drawable.Paraguay
+R.drawable.Brazil                R.drawable.Peru
+R.drawable.Bulgeria              R.drawable.Philippine
+R.drawable.Cambodia              R.drawable.Poland
+R.drawable.China                 R.drawable.Portugal
+R.drawable.Colombia              R.drawable.Qatar
+R.drawable.Costa-Rice           R.drawable.Romania
+R.drawable.Crotian                 R.drawable.Saudi-Arabia
+R.drawable.Cuba                  R.drawable.Serbia
+R.drawable.Czech-Republic        R.drawable.Singapore
+R.drawable.Denmark               R.drawable.South-Africa
+R.drawable.Egypt                  R.drawable.Spain
+R.drawable.England                R.drawable.Sri-Lanka
+R.drawable.Finland                 R.drawable.Seweden
+R.drawable.France                   R.drawable.Switzerland
+R.drawable.Georgia                R.drawable.Taiwan
+R.drawable.Germany               R.drawable.Thailand
+R.drawable.Greece                R.drawable.Ukrain
+R.drawable.HUngry                 R.drawable.United-Arab-Emirates
+R.drawable.India                   R.drawable.United-Kindom
+R.drawable.Israel                    R.drawable.United-States                    R.drawable.Uruguay
+R.drawable.Japan                   R.drawable.Vietnam
+
+ 

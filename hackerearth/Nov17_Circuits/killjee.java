@@ -1,26 +1,16 @@
-
-/*
-add code til 04/10/2018
-Meet in middle is a kind of divide and conquer problem but it is a little bit different from dac.
-This algorithm basically  devide the whole array in two parts only and perform required operation on individually.
-In third step this algorthim sort the one array and second array is taken to select elemnts and search in first array.
-This third step iterate over size of it and finaly max value is gets returned.
-
- problem-- http://codeforces.com/contest/888/problem/E
- 
-*/
 import java.io.*;
 import java.util.*;
 import java.math.*;
 //public 
 class Main{
     //static variable
-    static int mod = (int) 1e9 + 7;
+    static final long mod = (int) 1e9 + 7;
+    // static final long mod = 11;
     static final double eps = 1e-6;
     static final double pi = Math.PI;
     static final long inf = Long.MAX_VALUE / 2;
-    static int X[]=new int[2000005];
-    static int[] Y=new int[2000005];
+    static long[] fib=new long[2*1000001];
+    static long[] fac=new long[2*1000001];
 
     // .......static class
   static class Pair{
@@ -58,18 +48,42 @@ class Main{
        
         br=new BufferedReader(new InputStreamReader(System.in));
         out=new PrintWriter(System.out);
+      fibonacci();
+      factorial();
       int t=1;
-     // t=ii();
+      t=ii();
       while(t-->0){
 
         //........solution start
-        int[] tt=iint();
-        int[] a=iint();
-        int n=tt[0];
-        mod=tt[1];
-        System.out.println(solveSubsetSum(a,n));
 
 
+        long[] tt=ilong();
+        long n=tt[0],m=tt[1],k=tt[2];
+       
+        long sum=0L;
+        for (int i=(int)n;i<=(int)m ;i++ ) {
+           long temp=(fib[i]*((1L*fac[i])%mod))%mod;
+           // System.out.println("temp "+temp);
+           sum+=temp;
+           sum=sum%mod; 
+        }
+         // System.out.println(sum);
+         int ans=1;
+         ArrayList<Integer> al=new ArrayList<>();
+         al.add(1);
+        for (int i=1;i<=2*1000000 ;i++ ) {
+              long temp=(k*((1L*i)%mod))%mod;
+               if(temp<=sum)
+                  {
+                    al.add(i);
+                  }
+
+        }
+        Collections.sort(al);
+        System.out.println(al.get(al.size()-1));
+
+
+      
 
   
         
@@ -94,70 +108,63 @@ class Main{
 
 
   // ...............required method.
-
-void calcsubarray(int a[], int x[], int n, int c)
+  void fibonacci(){
+    fib[0]=1;fib[1]=1;
+    for (int i=2;i<=2*1000000 ;i++ ) {
+          fib[i]=fib[i-1]+fib[i-2];
+          fib[i]=fib[i]%mod;
+    }
+  }
+  void factorial(){
+    fac[0]=1;fac[1]=1;
+    for (int i=2;i<2*1000001 ;i++ ) {
+       fac[i]=(i*(1L*fac[i-1])%mod)%mod;
+    }
+  }
+long modInverse(long a, long m)
 {
-    for (int i=0; i<(1<<n); i++)
+    long g = gcd(a, m);
+    if (g != 1)
+        return 1;
+    else
     {
-        long  s = 0L;
-        for (int j=0; j<n; j++){
-            if ((i & (1<<j))>0){
-                s += a[j+c];
-                s=s%mod;
-              }
-        }
-        x[i] = (int)(s%mod);
+        // If a and m are relatively prime, then modulo inverse
+        // is a^(m-2) mode m
+       
+        return power(a, m-2);
     }
 }
  
-int solveSubsetSum(int a[], int n)
+// To compute x^y under modulo m
+ long power(long x, long y)
 {
-    calcsubarray(a, X, n/2, 0);
-    calcsubarray(a, Y, n-n/2, n/2);
-
-    int max=0;
-
-    int size_X = 1<<(n/2);
-    int size_Y = 1<<(n-n/2);
-
-    Arrays.sort(Y,0,size_Y-1);
-    
-    for (int i=0; i<size_X; i++)
+    long res = 1;      // Initialize result
+ 
+    x = x % mod;  // Update x if it is more than or 
+                // equal to p
+ 
+    while (y > 0)
     {
-        if (X[i] <= mod)
-        {
-            // lower_bound() returns the first address
-            // which has value greater than or equal to
-            // S-X[i].
-            int p = upperBound(Y, size_Y, mod-X[i]-1);
+        // If y is odd, multiply x with result
+        if (y % 2==1)
+            res = (res*x) % mod;
  
-            // If S-X[i] was not in array Y then decrease
-            // p by 1
-            
-            if (p == size_Y || Y[p] != (mod-X[i]-1))
-                p--;
-           p=Math.max(p,0);
-           max=Math.max(max,Y[p]+X[i]);
-        }
+        // y must be even now
+        y = y>>1; // y = y/2
+        x = (x*x) % mod;  
     }
-    return max;
+    return res;
 }
-public int upperBound(int[] array, int length, int value) {
-        int low = 0;
-        int high = length;
-        while (low < high) {
-            final int mid = (low + high) / 2;
-            if (value >= array[mid]) {
-                low = mid + 1;
-            } else {
-                high = mid;
-            }
-        }
-        return low;
-    }
-
  
+long gcd(long a, long b)
+{
+    if (a == 0)
+        return b;
+    return gcd(b%a, a);
+}
 
+
+     
 
 
 

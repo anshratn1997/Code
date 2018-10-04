@@ -1,0 +1,14 @@
+Erros and Mistake that i did..........
+Remember it all the time.
+1-Dfs is not recommended to use until  it does not becomes necessary.(cookoffNov17_skiing);
+  it may causes StackoverFlowError(NZEC).
+2-During modulo operation when subtraction is taken
+     then following steps is necessary todo;
+     ans=ans%n-p;
+     if(ans<0)
+      ans+=n;
+ 3-  If there is error in recursive function print all state variavle at returing point
+
+ 4 -  
+
+

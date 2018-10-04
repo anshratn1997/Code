@@ -1,26 +1,13 @@
-
-/*
-add code til 04/10/2018
-Meet in middle is a kind of divide and conquer problem but it is a little bit different from dac.
-This algorithm basically  devide the whole array in two parts only and perform required operation on individually.
-In third step this algorthim sort the one array and second array is taken to select elemnts and search in first array.
-This third step iterate over size of it and finaly max value is gets returned.
-
- problem-- http://codeforces.com/contest/888/problem/E
- 
-*/
 import java.io.*;
 import java.util.*;
 import java.math.*;
 //public 
 class Main{
     //static variable
-    static int mod = (int) 1e9 + 7;
+    static final int mod = (int) 1e9 + 7;
     static final double eps = 1e-6;
     static final double pi = Math.PI;
     static final long inf = Long.MAX_VALUE / 2;
-    static int X[]=new int[2000005];
-    static int[] Y=new int[2000005];
 
     // .......static class
   static class Pair{
@@ -63,14 +50,70 @@ class Main{
       while(t-->0){
 
         //........solution start
-        int[] tt=iint();
-        int[] a=iint();
-        int n=tt[0];
-        mod=tt[1];
-        System.out.println(solveSubsetSum(a,n));
+      int tt[]=iint();
+      int n=tt[0],e=tt[1];
+       HashSet<Integer> set=new HashSet<>();
+       ArrayList<Integer> al=new ArrayList<>();
+       int[] dic=new int[1000001];
+      
+       int[] a=iint();
+       for (int i=0;i<n ;i++ ) {
+          if(set.size()==0){
+            set.add(a[i]);;
+            al.add(a[i]);
+            dic[a[i]]++;
+            continue;
+          }
+          if(!set.contains(a[i])){
+            set.add(a[i]);
+            al.add(a[i]);
 
+          }
+          dic[a[i]]++;
 
+       }
+    Collections.sort(al);
 
+     long[] cumm=new long[al.size()];
+     long[] freq=new long[al.size()];
+     cumm[0]=al.get(0)*1L*dic[al.get(0)];
+     freq[0]=dic[al.get(0)];
+     for (int i=1;i<al.size() ;i++ ) {
+        cumm[i]=al.get(i)*1L*dic[al.get(i)]+cumm[i-1];
+        freq[i]=dic[al.get(i)]+freq[i-1];
+        // System.out.println(al.get(i)+" ");
+     }
+     // System.out.println();
+     long max=dic[al.get(0)];
+     for (int i=1;i<al.size() ;i++ ) {
+         int j=0;
+         while(j<i){
+             long req=0;
+             long mul=0;
+            if(j==0){
+              req=al.get(i)*1L*freq[i-1];
+              req=req-cumm[i-1];
+              mul=freq[i-1];
+            
+            }
+            else{
+              req=al.get(i)*1L*(freq[i-1]-freq[j-1]);
+              req=req-(cumm[i-1]-cumm[j-1]);
+              mul=freq[i-1]-freq[j-1];
+
+            }
+              if(req<=e){
+                 max=Math.max(max,dic[al.get(i)]+mul);
+                 break;
+              }
+
+              j++;
+
+         }
+         max=Math.max(max,dic[al.get(i)]);
+
+     }
+     System.out.println(max);
   
         
 
@@ -94,69 +137,6 @@ class Main{
 
 
   // ...............required method.
-
-void calcsubarray(int a[], int x[], int n, int c)
-{
-    for (int i=0; i<(1<<n); i++)
-    {
-        long  s = 0L;
-        for (int j=0; j<n; j++){
-            if ((i & (1<<j))>0){
-                s += a[j+c];
-                s=s%mod;
-              }
-        }
-        x[i] = (int)(s%mod);
-    }
-}
- 
-int solveSubsetSum(int a[], int n)
-{
-    calcsubarray(a, X, n/2, 0);
-    calcsubarray(a, Y, n-n/2, n/2);
-
-    int max=0;
-
-    int size_X = 1<<(n/2);
-    int size_Y = 1<<(n-n/2);
-
-    Arrays.sort(Y,0,size_Y-1);
-    
-    for (int i=0; i<size_X; i++)
-    {
-        if (X[i] <= mod)
-        {
-            // lower_bound() returns the first address
-            // which has value greater than or equal to
-            // S-X[i].
-            int p = upperBound(Y, size_Y, mod-X[i]-1);
- 
-            // If S-X[i] was not in array Y then decrease
-            // p by 1
-            
-            if (p == size_Y || Y[p] != (mod-X[i]-1))
-                p--;
-           p=Math.max(p,0);
-           max=Math.max(max,Y[p]+X[i]);
-        }
-    }
-    return max;
-}
-public int upperBound(int[] array, int length, int value) {
-        int low = 0;
-        int high = length;
-        while (low < high) {
-            final int mid = (low + high) / 2;
-            if (value >= array[mid]) {
-                low = mid + 1;
-            } else {
-                high = mid;
-            }
-        }
-        return low;
-    }
-
- 
 
 
 

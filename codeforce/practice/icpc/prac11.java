@@ -1,33 +1,39 @@
-
-/*
-add code til 04/10/2018
-Meet in middle is a kind of divide and conquer problem but it is a little bit different from dac.
-This algorithm basically  devide the whole array in two parts only and perform required operation on individually.
-In third step this algorthim sort the one array and second array is taken to select elemnts and search in first array.
-This third step iterate over size of it and finaly max value is gets returned.
-
- problem-- http://codeforces.com/contest/888/problem/E
- 
-*/
 import java.io.*;
 import java.util.*;
 import java.math.*;
 //public 
 class Main{
     //static variable
-    static int mod = (int) 1e9 + 7;
+    static final int mod = (int) 1e9 + 7;
     static final double eps = 1e-6;
     static final double pi = Math.PI;
     static final long inf = Long.MAX_VALUE / 2;
-    static int X[]=new int[2000005];
-    static int[] Y=new int[2000005];
 
     // .......static class
   static class Pair{
       int key,value;
-      Pair(int key,int value){
+      int index;
+      Pair(int key,int value,int index){
         this.key=key;
         this.value=value;
+        this.index=index;
+      }
+      int Key(){
+        return key;
+      }
+      int Value(){
+        return value;
+      }
+      int ind(){
+        return index;
+      }
+  }
+  static class Pair1{
+      int key,value;
+      Pair1(int key,int value){
+        this.key=key;
+        this.value=value;
+        
       }
       int Key(){
         return key;
@@ -43,6 +49,14 @@ class Main{
           return key1.compareTo(key2);
      }
   }
+  static class mycomparator1 implements Comparator<Pair1>{
+     @Override
+     public int compare(Pair1 o1,Pair1 o2){
+      Integer key1=o1.Key(),key2=o2.Key();
+          return key2.compareTo(key1);
+     }
+  }
+    
     
 //.............staic class end.
   
@@ -55,24 +69,72 @@ class Main{
   void main1()
   {
     try{
-       
-        br=new BufferedReader(new InputStreamReader(System.in));
-        out=new PrintWriter(System.out);
+     br=new BufferedReader(new InputStreamReader(System.in));
+     out=new PrintWriter(System.out);
       int t=1;
      // t=ii();
       while(t-->0){
 
         //........solution start
-        int[] tt=iint();
-        int[] a=iint();
-        int n=tt[0];
-        mod=tt[1];
-        System.out.println(solveSubsetSum(a,n));
 
+      
 
-
-  
         
+        int tt[]=iint();
+        int n=tt[0],bu=tt[1];
+        int si[]=iint();
+        int bc[]=iint();
+        int br[]=iint();
+        ArrayList<Pair> al=new ArrayList<>();
+        ArrayList<Pair1> al1=new ArrayList<>();
+        for (int i=0;i<bu ;i++ ) {
+            al.add(new Pair(br[i],bc[i],i));
+            
+
+        }
+        for (int i=0;i<n ;i++ ) {
+          al1.add(new Pair1(si[i],i));
+        }
+        Collections.sort(al,new mycomparator());
+        Collections.sort(al1,new mycomparator1());
+        int[] ans=new int[n];
+        boolean visit[]=new boolean[bu];
+        Arrays.fill(visit,false);
+        boolean find=false;
+        for (int i=0;i<n ;i++ ) {
+                Pair1 p1=al1.get(i);
+                int size=p1.Key();
+                find=false;
+               for (int l=0;l<bu ;l++ ) {
+                Pair p2=al.get(l);
+                int sizel=p2.Value();
+                  if(size<=sizel && !visit[l])
+                  {
+                    //System.out.println("heg "+l+" "+sizel);
+                    ans[p1.Value()]=p2.ind()+1;
+                    visit[l]=true;
+                    
+                    find=true;
+                    break;
+
+                  }
+               }
+               if(!find){
+                //System.out.println(" find "+i);
+                break;}
+
+        }
+        if(!find)
+          System.out.println("impossible");
+        else
+        {
+          for (int i=0;i<n ;i++ ) {
+            System.out.print(ans[i]+" ");
+          }
+          System.out.println();
+        }
+
+
 
 
 
@@ -94,69 +156,6 @@ class Main{
 
 
   // ...............required method.
-
-void calcsubarray(int a[], int x[], int n, int c)
-{
-    for (int i=0; i<(1<<n); i++)
-    {
-        long  s = 0L;
-        for (int j=0; j<n; j++){
-            if ((i & (1<<j))>0){
-                s += a[j+c];
-                s=s%mod;
-              }
-        }
-        x[i] = (int)(s%mod);
-    }
-}
- 
-int solveSubsetSum(int a[], int n)
-{
-    calcsubarray(a, X, n/2, 0);
-    calcsubarray(a, Y, n-n/2, n/2);
-
-    int max=0;
-
-    int size_X = 1<<(n/2);
-    int size_Y = 1<<(n-n/2);
-
-    Arrays.sort(Y,0,size_Y-1);
-    
-    for (int i=0; i<size_X; i++)
-    {
-        if (X[i] <= mod)
-        {
-            // lower_bound() returns the first address
-            // which has value greater than or equal to
-            // S-X[i].
-            int p = upperBound(Y, size_Y, mod-X[i]-1);
- 
-            // If S-X[i] was not in array Y then decrease
-            // p by 1
-            
-            if (p == size_Y || Y[p] != (mod-X[i]-1))
-                p--;
-           p=Math.max(p,0);
-           max=Math.max(max,Y[p]+X[i]);
-        }
-    }
-    return max;
-}
-public int upperBound(int[] array, int length, int value) {
-        int low = 0;
-        int high = length;
-        while (low < high) {
-            final int mid = (low + high) / 2;
-            if (value >= array[mid]) {
-                low = mid + 1;
-            } else {
-                high = mid;
-            }
-        }
-        return low;
-    }
-
- 
 
 
 

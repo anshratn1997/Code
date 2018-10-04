@@ -1,39 +1,31 @@
-
-/*
-add code til 04/10/2018
-Meet in middle is a kind of divide and conquer problem but it is a little bit different from dac.
-This algorithm basically  devide the whole array in two parts only and perform required operation on individually.
-In third step this algorthim sort the one array and second array is taken to select elemnts and search in first array.
-This third step iterate over size of it and finaly max value is gets returned.
-
- problem-- http://codeforces.com/contest/888/problem/E
- 
-*/
 import java.io.*;
 import java.util.*;
 import java.math.*;
 //public 
-class Main{
+class pc1{
     //static variable
-    static int mod = (int) 1e9 + 7;
+    static final int mod = (int) 1e9 + 7;
     static final double eps = 1e-6;
     static final double pi = Math.PI;
     static final long inf = Long.MAX_VALUE / 2;
-    static int X[]=new int[2000005];
-    static int[] Y=new int[2000005];
+    ArrayList<Pair> al=null;
 
     // .......static class
   static class Pair{
-      int key,value;
-      Pair(int key,int value){
+      int key,value,wait;
+      Pair(int key,int value,int wait){
         this.key=key;
         this.value=value;
+        this.wait=wait;
       }
       int Key(){
         return key;
       }
       int Value(){
         return value;
+      }
+      int Wait(){
+        return wait;
       }
   }
   static class mycomparator implements Comparator<Pair>{
@@ -49,25 +41,65 @@ class Main{
     BufferedReader br;
     PrintWriter out;
     public static void main(String[] args) {
-    new Main().main1();
+    new pc1().main1();
  
   }
   void main1()
   {
     try{
-       
+        if (System.getProperty("ONLINE_JUDGE") == null) {
+        // Input is a file
+        br=new BufferedReader(new FileReader(new File("in.txt")));
+        out=new PrintWriter("out.txt");
+       } else {
+        // Input is System.in
         br=new BufferedReader(new InputStreamReader(System.in));
         out=new PrintWriter(System.out);
+      }
       int t=1;
      // t=ii();
       while(t-->0){
 
         //........solution start
-        int[] tt=iint();
-        int[] a=iint();
-        int n=tt[0];
-        mod=tt[1];
-        System.out.println(solveSubsetSum(a,n));
+
+        int n=ii();
+        al=new ArrayList<>();
+        for (int i=0;i<n ;i++ ) {
+          int[] tt=iint();
+          al.add(new Pair(tt[0],tt[1],tt[2])); 
+        }
+        Collections.sort(al,new mycomparator());
+        long ans[]=new long[1000001];
+       
+        int loc=n-1;
+        Pair p1=al.get(n-1);
+         long max=p1.Value();
+        ans[p1.Key()]=p1.Value();
+        for (int i=n-2;i>=0 ;i-- ) {
+           Pair p=al.get(i);
+           ans[p.Key()]=p.Value();
+           int key=p.Key()+p.Wait()-1;
+           int ind=upperBound(n,key);
+           if(ind==n){
+             if(max<p.Value()){
+              max=p.Value();
+             }
+             ans[p.Key()]=max;
+             continue;
+           }
+          // out.println("ind "+ind+" "+max);
+           Pair pf=al.get(ind) ;
+           if(ans[pf.Key()]+p.Value()>max){
+            max=ans[pf.Key()]+p.Value();
+            ans[p.Key()]=max;
+           }
+           else
+            ans[p.Key()]=max;
+          //out.println(ans[p.Key()]+" "+p.Key());
+           
+        }
+
+        out.println(max);
 
 
 
@@ -95,59 +127,14 @@ class Main{
 
   // ...............required method.
 
-void calcsubarray(int a[], int x[], int n, int c)
-{
-    for (int i=0; i<(1<<n); i++)
-    {
-        long  s = 0L;
-        for (int j=0; j<n; j++){
-            if ((i & (1<<j))>0){
-                s += a[j+c];
-                s=s%mod;
-              }
-        }
-        x[i] = (int)(s%mod);
-    }
-}
- 
-int solveSubsetSum(int a[], int n)
-{
-    calcsubarray(a, X, n/2, 0);
-    calcsubarray(a, Y, n-n/2, n/2);
-
-    int max=0;
-
-    int size_X = 1<<(n/2);
-    int size_Y = 1<<(n-n/2);
-
-    Arrays.sort(Y,0,size_Y-1);
-    
-    for (int i=0; i<size_X; i++)
-    {
-        if (X[i] <= mod)
-        {
-            // lower_bound() returns the first address
-            // which has value greater than or equal to
-            // S-X[i].
-            int p = upperBound(Y, size_Y, mod-X[i]-1);
- 
-            // If S-X[i] was not in array Y then decrease
-            // p by 1
-            
-            if (p == size_Y || Y[p] != (mod-X[i]-1))
-                p--;
-           p=Math.max(p,0);
-           max=Math.max(max,Y[p]+X[i]);
-        }
-    }
-    return max;
-}
-public int upperBound(int[] array, int length, int value) {
+ int upperBound(int length, int value) {
         int low = 0;
         int high = length;
         while (low < high) {
             final int mid = (low + high) / 2;
-            if (value >= array[mid]) {
+            Pair p=al.get(mid);
+
+            if (value >=p.Key()) {
                 low = mid + 1;
             } else {
                 high = mid;
@@ -156,7 +143,6 @@ public int upperBound(int[] array, int length, int value) {
         return low;
     }
 
- 
 
 
 

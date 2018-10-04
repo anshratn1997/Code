@@ -1,26 +1,16 @@
-
-/*
-add code til 04/10/2018
-Meet in middle is a kind of divide and conquer problem but it is a little bit different from dac.
-This algorithm basically  devide the whole array in two parts only and perform required operation on individually.
-In third step this algorthim sort the one array and second array is taken to select elemnts and search in first array.
-This third step iterate over size of it and finaly max value is gets returned.
-
- problem-- http://codeforces.com/contest/888/problem/E
- 
-*/
 import java.io.*;
 import java.util.*;
 import java.math.*;
 //public 
 class Main{
     //static variable
-    static int mod = (int) 1e9 + 7;
+    static final int mod = (int) 1e9 + 7;
     static final double eps = 1e-6;
     static final double pi = Math.PI;
     static final long inf = Long.MAX_VALUE / 2;
-    static int X[]=new int[2000005];
-    static int[] Y=new int[2000005];
+    static final int MAX=100;
+   static boolean prime[]=new boolean[101]; 
+   static int pcount[]=new int[100001];
 
     // .......static class
   static class Pair{
@@ -55,23 +45,26 @@ class Main{
   void main1()
   {
     try{
-       
-        br=new BufferedReader(new InputStreamReader(System.in));
-        out=new PrintWriter(System.out);
+     br=new BufferedReader(new InputStreamReader(System.in));
+     out=new PrintWriter(System.out);
       int t=1;
-     // t=ii();
+      t=ii();
+      PRIME();
+      precompute();
       while(t-->0){
 
         //........solution start
+
         int[] tt=iint();
-        int[] a=iint();
-        int n=tt[0];
-        mod=tt[1];
-        System.out.println(solveSubsetSum(a,n));
+        int l=tt[0],r=tt[1];
+        int ans=0;
+        if(l!=0)
+        ans=pcount[r]-pcount[l-1];
+        else
+          ans=pcount[r];
+        out.println(ans);
 
 
-
-  
         
 
 
@@ -94,69 +87,46 @@ class Main{
 
 
   // ...............required method.
-
-void calcsubarray(int a[], int x[], int n, int c)
+void PRIME()
 {
-    for (int i=0; i<(1<<n); i++)
-    {
-        long  s = 0L;
-        for (int j=0; j<n; j++){
-            if ((i & (1<<j))>0){
-                s += a[j+c];
-                s=s%mod;
-              }
-        }
-        x[i] = (int)(s%mod);
-    }
-}
- 
-int solveSubsetSum(int a[], int n)
-{
-    calcsubarray(a, X, n/2, 0);
-    calcsubarray(a, Y, n-n/2, n/2);
-
-    int max=0;
-
-    int size_X = 1<<(n/2);
-    int size_Y = 1<<(n-n/2);
-
-    Arrays.sort(Y,0,size_Y-1);
     
-    for (int i=0; i<size_X; i++)
+    Arrays.fill(prime,true);
+    prime[0]=false;
+    prime[1]=false;
+    for (int p=2; p<=100; p++)
     {
-        if (X[i] <= mod)
+        if (prime[p] == true)
         {
-            // lower_bound() returns the first address
-            // which has value greater than or equal to
-            // S-X[i].
-            int p = upperBound(Y, size_Y, mod-X[i]-1);
+          
+            for (int i=p*2; i<=100; i += p){
+                
+                   prime[i] = false;
+                 }
  
-            // If S-X[i] was not in array Y then decrease
-            // p by 1
-            
-            if (p == size_Y || Y[p] != (mod-X[i]-1))
-                p--;
-           p=Math.max(p,0);
-           max=Math.max(max,Y[p]+X[i]);
         }
     }
-    return max;
 }
-public int upperBound(int[] array, int length, int value) {
-        int low = 0;
-        int high = length;
-        while (low < high) {
-            final int mid = (low + high) / 2;
-            if (value >= array[mid]) {
-                low = mid + 1;
-            } else {
-                high = mid;
-            }
-        }
-        return low;
-    }
+void precompute(){
+  pcount[0]=0;
+  
+  for (int i=1;i<=100000 ;i++ ) {
+       int temp=i;
+       int count=0;
+       while(temp>0){
 
- 
+         if(temp%2!=0){
+          count++;
+         }
+         temp=temp/2;
+       }
+       if(prime[count])
+         pcount[i]=pcount[i-1]+1;
+       else
+        pcount[i]=pcount[i-1];
+    
+  }
+
+}
 
 
 

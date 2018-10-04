@@ -1,26 +1,15 @@
-
-/*
-add code til 04/10/2018
-Meet in middle is a kind of divide and conquer problem but it is a little bit different from dac.
-This algorithm basically  devide the whole array in two parts only and perform required operation on individually.
-In third step this algorthim sort the one array and second array is taken to select elemnts and search in first array.
-This third step iterate over size of it and finaly max value is gets returned.
-
- problem-- http://codeforces.com/contest/888/problem/E
- 
-*/
 import java.io.*;
 import java.util.*;
 import java.math.*;
 //public 
 class Main{
     //static variable
-    static int mod = (int) 1e9 + 7;
+    static final int mod = (int) 1e9 + 7;
     static final double eps = 1e-6;
     static final double pi = Math.PI;
     static final long inf = Long.MAX_VALUE / 2;
-    static int X[]=new int[2000005];
-    static int[] Y=new int[2000005];
+    static NavigableSet[] graph=null;
+    
 
     // .......static class
   static class Pair{
@@ -63,15 +52,69 @@ class Main{
       while(t-->0){
 
         //........solution start
-        int[] tt=iint();
+
+        int nq[]=iint();
+        int n=nq[0],q=nq[1];
         int[] a=iint();
-        int n=tt[0];
-        mod=tt[1];
-        System.out.println(solveSubsetSum(a,n));
+        //HashSet<Integer> set=new HashSet<>();
+        graph=new NavigableSet[200001];
+        for (int i=0;i<200001 ;i++ ) {
+          graph[i]=new TreeSet<Integer>();
+        }
+        for (int i=0;i<n ;i++ ) {
+          graph[a[i]].add(i);
+        }
+        
+        // System.out.println(graph[1].ceiling(6));
+        
+        
+      
 
+       while(q-->0){
+            String qq[]=isa();
+            int y=Integer.parseInt(qq[0]);
+            int z=Integer.parseInt(qq[1]);
+            char ch=qq[2].charAt(0);
+            if(graph[z].size()==0){
+              out.println("-1");
+              continue;
+            }
+            if(ch=='L')
+            { 
+              //System.out.println(y+" "+store[z][0]);
+             Integer x=(Integer)graph[z].floor(y);
+             if(x==null)
+              x=(Integer)graph[z].last();
+             // out.println("hello "+x);
+             if(y>x){
 
+                out.println(y-x);
+             }
+              else if(y==x)
+                out.println("0");
+              else
+                out.println(n-(x-y));
+             
 
-  
+            }
+            if(ch=='R')
+            { 
+              Integer x=(Integer)graph[z].ceiling(y);
+             if(x==null)
+              x=(Integer)graph[z].first();
+              // out.println("hello 1 "+x);
+               if(y>x)
+                out.println(n-(y-x));
+              else if(y==x)
+                out.println("0");
+              else
+             { 
+                out.println(x-y);
+              }
+              
+
+            }
+        }  
         
 
 
@@ -89,74 +132,13 @@ class Main{
      out.close(); 
     }
     catch(Exception e){
+      
         e.printStackTrace();}    
   }
 
 
   // ...............required method.
 
-void calcsubarray(int a[], int x[], int n, int c)
-{
-    for (int i=0; i<(1<<n); i++)
-    {
-        long  s = 0L;
-        for (int j=0; j<n; j++){
-            if ((i & (1<<j))>0){
-                s += a[j+c];
-                s=s%mod;
-              }
-        }
-        x[i] = (int)(s%mod);
-    }
-}
- 
-int solveSubsetSum(int a[], int n)
-{
-    calcsubarray(a, X, n/2, 0);
-    calcsubarray(a, Y, n-n/2, n/2);
-
-    int max=0;
-
-    int size_X = 1<<(n/2);
-    int size_Y = 1<<(n-n/2);
-
-    Arrays.sort(Y,0,size_Y-1);
-    
-    for (int i=0; i<size_X; i++)
-    {
-        if (X[i] <= mod)
-        {
-            // lower_bound() returns the first address
-            // which has value greater than or equal to
-            // S-X[i].
-            int p = upperBound(Y, size_Y, mod-X[i]-1);
- 
-            // If S-X[i] was not in array Y then decrease
-            // p by 1
-            
-            if (p == size_Y || Y[p] != (mod-X[i]-1))
-                p--;
-           p=Math.max(p,0);
-           max=Math.max(max,Y[p]+X[i]);
-        }
-    }
-    return max;
-}
-public int upperBound(int[] array, int length, int value) {
-        int low = 0;
-        int high = length;
-        while (low < high) {
-            final int mid = (low + high) / 2;
-            if (value >= array[mid]) {
-                low = mid + 1;
-            } else {
-                high = mid;
-            }
-        }
-        return low;
-    }
-
- 
 
 
 
@@ -223,7 +205,7 @@ public int upperBound(int[] array, int length, int value) {
     String si() throws IOException{
        return br.readLine();
     }
-    String[] isa(int n) throws IOException{
+    String[] isa() throws IOException{
         String at =si();
         return at.split(" ");
     }

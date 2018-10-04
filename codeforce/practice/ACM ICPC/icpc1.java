@@ -1,39 +1,31 @@
-
-/*
-add code til 04/10/2018
-Meet in middle is a kind of divide and conquer problem but it is a little bit different from dac.
-This algorithm basically  devide the whole array in two parts only and perform required operation on individually.
-In third step this algorthim sort the one array and second array is taken to select elemnts and search in first array.
-This third step iterate over size of it and finaly max value is gets returned.
-
- problem-- http://codeforces.com/contest/888/problem/E
- 
-*/
 import java.io.*;
 import java.util.*;
 import java.math.*;
 //public 
-class Main{
+class icpc1{
     //static variable
-    static int mod = (int) 1e9 + 7;
+    static final int mod = (int) 1e9 + 7;
     static final double eps = 1e-6;
     static final double pi = Math.PI;
     static final long inf = Long.MAX_VALUE / 2;
-    static int X[]=new int[2000005];
-    static int[] Y=new int[2000005];
-
+    
+ 
     // .......static class
   static class Pair{
-      int key,value;
-      Pair(int key,int value){
+      int key,value,wait;
+      Pair(int key,int value,int wait){
         this.key=key;
         this.value=value;
+        this.wait=wait;
       }
       int Key(){
         return key;
       }
       int Value(){
         return value;
+      }
+      int Wait(){
+        return wait;
       }
   }
   static class mycomparator implements Comparator<Pair>{
@@ -49,41 +41,73 @@ class Main{
     BufferedReader br;
     PrintWriter out;
     public static void main(String[] args) {
-    new Main().main1();
+    new icpc1().main1();
  
   }
   void main1()
   {
     try{
-       
         br=new BufferedReader(new InputStreamReader(System.in));
         out=new PrintWriter(System.out);
-      int t=1;
-     // t=ii();
-      while(t-->0){
-
+        int t=1;
+        //t=ii();
+         while(t-->0){
+ 
         //........solution start
-        int[] tt=iint();
-        int[] a=iint();
-        int n=tt[0];
-        mod=tt[1];
-        System.out.println(solveSubsetSum(a,n));
+          double tt[]=idouble();
+          double n=tt[0],k=tt[1];
+
+         
+          double ll=-100000000*1.0;
+          double rr=100000000.0*1.0;
+          double find=1.0*Math.pow(n,3)*Math.pow(k,2);
+          System.out.println(find);
+           double mid=1.0;
+        while(ll<rr){
+           mid=(ll+rr)/2;
+           double c=calc(mid,n);
+           if(c==find)
+             {
+              System.out.println(c);
+              break;
+             }
+          else if(mid>find){
+             rr=mid-1;
+          }
+          else
+            ll=mid+1;
+
+        }
+
+         if((int)n==1){
+           if((int)k==0)
+           System.out.println("0");
+           else
+            System.out.println("-1");
+         }
+         else{
+          for (int i=0;i<n-1 ;i++ ) {
+            System.out.print("0 ");
+          }
+          System.out.println(mid/(double)Math.pow(n,2));}
+
+         
 
 
 
-  
+          
+
         
-
-
-
-
-
-
-
-
-
-        //..........solution end.
-
+ 
+ 
+ 
+ 
+        
+ 
+  
+ 
+       //..........solution end.
+ 
      }
      out.flush();
      out.close(); 
@@ -91,76 +115,18 @@ class Main{
     catch(Exception e){
         e.printStackTrace();}    
   }
-
-
+ 
+ 
   // ...............required method.
 
-void calcsubarray(int a[], int x[], int n, int c)
-{
-    for (int i=0; i<(1<<n); i++)
-    {
-        long  s = 0L;
-        for (int j=0; j<n; j++){
-            if ((i & (1<<j))>0){
-                s += a[j+c];
-                s=s%mod;
-              }
-        }
-        x[i] = (int)(s%mod);
-    }
-}
+ double calc(double u,double n){
+  double rt=(n-1.0)*Math.pow(u,2)+Math.pow(3*u-u,2);
+  return rt;
+ }
  
-int solveSubsetSum(int a[], int n)
-{
-    calcsubarray(a, X, n/2, 0);
-    calcsubarray(a, Y, n-n/2, n/2);
-
-    int max=0;
-
-    int size_X = 1<<(n/2);
-    int size_Y = 1<<(n-n/2);
-
-    Arrays.sort(Y,0,size_Y-1);
-    
-    for (int i=0; i<size_X; i++)
-    {
-        if (X[i] <= mod)
-        {
-            // lower_bound() returns the first address
-            // which has value greater than or equal to
-            // S-X[i].
-            int p = upperBound(Y, size_Y, mod-X[i]-1);
  
-            // If S-X[i] was not in array Y then decrease
-            // p by 1
-            
-            if (p == size_Y || Y[p] != (mod-X[i]-1))
-                p--;
-           p=Math.max(p,0);
-           max=Math.max(max,Y[p]+X[i]);
-        }
-    }
-    return max;
-}
-public int upperBound(int[] array, int length, int value) {
-        int low = 0;
-        int high = length;
-        while (low < high) {
-            final int mid = (low + high) / 2;
-            if (value >= array[mid]) {
-                low = mid + 1;
-            } else {
-                high = mid;
-            }
-        }
-        return low;
-    }
-
  
-
-
-
-
+ 
   //................end.
   
   
@@ -181,7 +147,7 @@ public int upperBound(int[] array, int length, int value) {
       }
       return min;
     }
-
+ 
     int[] iint() throws IOException{
       String line[]=br.readLine().split(" ");
       int[] a=new int[line.length];
@@ -227,7 +193,7 @@ public int upperBound(int[] array, int length, int value) {
         String at =si();
         return at.split(" ");
     }
-
+ 
     double[][] idm(int n, int m) throws IOException{
         double a[][] = new double[n][m];
         for (int i = 0; i < n; i++) {
@@ -236,7 +202,7 @@ public int upperBound(int[] array, int length, int value) {
         }
         return a;
     }
-
+ 
     int[][] iim(int n, int m) throws IOException{
         int a[][] = new int[n][m];
         for (int i = 0; i < n; i++) {
@@ -255,4 +221,6 @@ public int upperBound(int[] array, int length, int value) {
     }
     //..............input methods end;
     
-} 
+}  
+
+

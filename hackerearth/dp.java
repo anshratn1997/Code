@@ -1,26 +1,17 @@
-
-/*
-add code til 04/10/2018
-Meet in middle is a kind of divide and conquer problem but it is a little bit different from dac.
-This algorithm basically  devide the whole array in two parts only and perform required operation on individually.
-In third step this algorthim sort the one array and second array is taken to select elemnts and search in first array.
-This third step iterate over size of it and finaly max value is gets returned.
-
- problem-- http://codeforces.com/contest/888/problem/E
- 
-*/
 import java.io.*;
 import java.util.*;
 import java.math.*;
 //public 
 class Main{
     //static variable
-    static int mod = (int) 1e9 + 7;
+    static final int mod = (int) 1e9 + 7;
     static final double eps = 1e-6;
     static final double pi = Math.PI;
     static final long inf = Long.MAX_VALUE / 2;
-    static int X[]=new int[2000005];
-    static int[] Y=new int[2000005];
+    static int[] a=null;
+    static int[][] dp=null;
+    static int[] cumm=null;
+    static boolean[] prime=new boolean[5001];
 
     // .......static class
   static class Pair{
@@ -63,13 +54,36 @@ class Main{
       while(t-->0){
 
         //........solution start
-        int[] tt=iint();
-        int[] a=iint();
-        int n=tt[0];
-        mod=tt[1];
-        System.out.println(solveSubsetSum(a,n));
+        PRIME();
+
+        int n=ii();
+        a=new int[n+1];
+        String line=si();
+        String ll[]=line.split(" ");
+        for (int i=0;i<n;i++ ) {
+          a[i+1]=Integer.parseInt(ll[i]);
+        }
+        a[0]=0;
+        dp=new int[n+2][n+2];
+        cumm=new int[n+1];
+        cumm[0]=a[0];
+        for (int i=1;i<=n ;i++ ) {
+          cumm[i]=a[i]+cumm[i-1];
+        }
+        for (int i=1;i<=n ;i++ ) {
+           for (int j=i+1;j<=n ;j++ ) {
+              dp[i][j]=-1;
+           }
+           dp[i][i]=0;
+           dp[i][0]=0;
+           dp[0][i]=0;
+           dp[i][n+1]=0;
+        }
+        out.println(find_max(1,n));
+        // out.println(cumm[n]);
 
 
+      
 
   
         
@@ -95,68 +109,61 @@ class Main{
 
   // ...............required method.
 
-void calcsubarray(int a[], int x[], int n, int c)
-{
-    for (int i=0; i<(1<<n); i++)
+  int find_max(int l,int r){
+    if(prime[r-l+1])
     {
-        long  s = 0L;
-        for (int j=0; j<n; j++){
-            if ((i & (1<<j))>0){
-                s += a[j+c];
-                s=s%mod;
-              }
-        }
-        x[i] = (int)(s%mod);
+      int max=cumm[r]-cumm[l-1];
+      dp[l][r]=max;
+      return max;
     }
-}
- 
-int solveSubsetSum(int a[], int n)
-{
-    calcsubarray(a, X, n/2, 0);
-    calcsubarray(a, Y, n-n/2, n/2);
-
+    if(dp[l][r]!=-1)
+      return dp[l][r];
     int max=0;
-
-    int size_X = 1<<(n/2);
-    int size_Y = 1<<(n-n/2);
-
-    Arrays.sort(Y,0,size_Y-1);
-    
-    for (int i=0; i<size_X; i++)
-    {
-        if (X[i] <= mod)
+    for (int i=l;i<=r ;i++ ) {
+        if(dp[l][i-1]!=-1 && dp[i+1][r]!=-1)
         {
-            // lower_bound() returns the first address
-            // which has value greater than or equal to
-            // S-X[i].
-            int p = upperBound(Y, size_Y, mod-X[i]-1);
- 
-            // If S-X[i] was not in array Y then decrease
-            // p by 1
-            
-            if (p == size_Y || Y[p] != (mod-X[i]-1))
-                p--;
-           p=Math.max(p,0);
-           max=Math.max(max,Y[p]+X[i]);
+          max=Math.max(max,dp[l][i-1]+dp[i+1][r]);
+          continue;
         }
-    }
-    return max;
-}
-public int upperBound(int[] array, int length, int value) {
-        int low = 0;
-        int high = length;
-        while (low < high) {
-            final int mid = (low + high) / 2;
-            if (value >= array[mid]) {
-                low = mid + 1;
-            } else {
-                high = mid;
-            }
-        }
-        return low;
-    }
+        int m1=0;
+        if(dp[l][i-1]==-1)
+               m1=find_max(l,i-1);
+        else 
+          m1=dp[l][i-1];
+        int m2=0;
+        if(dp[i+1][r]==-1)
+          m2=find_max(i+1,r);
+        else
+          m2=dp[i+1][r];
 
+        max=Math.max(max,m1+m2);
+        
+    }
+    dp[l][r]=max;
+    return max;
+  }
+
+   void PRIME(){
+    Arrays.fill(prime,true);
+    prime[0]=false;
+    prime[1]=false;
+    for (int p=2; p<5001; p++)
+    {
+        if (prime[p] == true)
+        {
+           
+            for (int i=p*2; i<5001; i += p){
+                
+                   prime[i] = false;
+                 }
  
+        }
+     }
+     
+     //System.out.println(count);
+   }
+
+
 
 
 

@@ -1,85 +1,103 @@
-
-/*
-add code til 04/10/2018
-Meet in middle is a kind of divide and conquer problem but it is a little bit different from dac.
-This algorithm basically  devide the whole array in two parts only and perform required operation on individually.
-In third step this algorthim sort the one array and second array is taken to select elemnts and search in first array.
-This third step iterate over size of it and finaly max value is gets returned.
-
- problem-- http://codeforces.com/contest/888/problem/E
- 
-*/
 import java.io.*;
 import java.util.*;
 import java.math.*;
 //public 
-class Main{
+class edu11{
     //static variable
-    static int mod = (int) 1e9 + 7;
+    static final int mod = (int) 1e9 + 7;
     static final double eps = 1e-6;
     static final double pi = Math.PI;
     static final long inf = Long.MAX_VALUE / 2;
-    static int X[]=new int[2000005];
-    static int[] Y=new int[2000005];
+    int a[]=null;
+    boolean visited[]=null;
+    boolean visited1[]=null;
+    int[] finish=null;
+    int[] count=null;
 
     // .......static class
-  static class Pair{
-      int key,value;
-      Pair(int key,int value){
-        this.key=key;
-        this.value=value;
-      }
-      int Key(){
-        return key;
-      }
-      int Value(){
-        return value;
-      }
-  }
-  static class mycomparator implements Comparator<Pair>{
-     @Override
-     public int compare(Pair o1,Pair o2){
-      Integer key1=o1.Key(),key2=o2.Key();
-          return key1.compareTo(key2);
-     }
-  }
+ 
     
 //.............staic class end.
   
     BufferedReader br;
     PrintWriter out;
     public static void main(String[] args) {
-    new Main().main1();
+    new edu11().main1();
  
   }
   void main1()
   {
     try{
-       
-        br=new BufferedReader(new InputStreamReader(System.in));
-        out=new PrintWriter(System.out);
+     br=new BufferedReader(new InputStreamReader(System.in));
+     out=new PrintWriter(System.out);
       int t=1;
      // t=ii();
       while(t-->0){
 
         //........solution start
-        int[] tt=iint();
-        int[] a=iint();
-        int n=tt[0];
-        mod=tt[1];
-        System.out.println(solveSubsetSum(a,n));
+        int n=ii();
+        a =iint();
+        ArrayList<HashSet<Integer>> al=new ArrayList<>();
+       
+        visited=new boolean[n+1];
+        visited1=new boolean[n+1];
+        finish=new int[n+1];
+        count=new int[n+1];
+        Arrays.fill(visited,false);
 
+         Arrays.fill(visited,false);
+        for (int i=1;i<=n ;i++ ) {
+            int temp=i;
+            HashSet<Integer> set1=new HashSet<>();
+            if(visited[i])
+              continue;
+            while(!visited[temp]){
+                  visited[temp]=true;
+                  set1.add(temp);
+                  temp=a[temp-1];
 
+                }
+            if(al.size()<2){
+                  al.add(set1);
+                }
+            else{
+             
+                  for (int l=0;l<2 ;l++ ) {
+                    HashSet tt1=al.get(l);
+                   
+                    if(tt1.size()<set1.size())
+                      {
+                        al.set(l,set1);break;
+                      } 
 
-  
-        
+                  }
+                  
+           }
+        }
+        HashSet<Integer> set=new HashSet<>(al.get(0));
 
+        if(al.size()==2)
+        set.addAll(al.get(1));
 
+      long ans=set.size()*set.size();
+       System.out.println(ans);
+       
+       for (int i=1;i<=n ;i++ ) {
+            if(set.contains(i)){
+             visited1[i]=true;
+            } 
+       }
+      for (int i=1;i<=n ;i++ ) {
+         if(!set.contains(i)){
+          //
+          if(!visited1[i])
+            dfs(i);
+          System.out.println(i+" "+count[i]+" "+finish[i]);
+          ans=ans+count[i]+1;
+         }
 
-
-
-
-
+      }
+      System.out.println(ans);
 
 
         //..........solution end.
@@ -94,70 +112,30 @@ class Main{
 
 
   // ...............required method.
-
-void calcsubarray(int a[], int x[], int n, int c)
-{
-    for (int i=0; i<(1<<n); i++)
-    {
-        long  s = 0L;
-        for (int j=0; j<n; j++){
-            if ((i & (1<<j))>0){
-                s += a[j+c];
-                s=s%mod;
-              }
-        }
-        x[i] = (int)(s%mod);
-    }
-}
- 
-int solveSubsetSum(int a[], int n)
-{
-    calcsubarray(a, X, n/2, 0);
-    calcsubarray(a, Y, n-n/2, n/2);
-
-    int max=0;
-
-    int size_X = 1<<(n/2);
-    int size_Y = 1<<(n-n/2);
-
-    Arrays.sort(Y,0,size_Y-1);
-    
-    for (int i=0; i<size_X; i++)
-    {
-        if (X[i] <= mod)
-        {
-            // lower_bound() returns the first address
-            // which has value greater than or equal to
-            // S-X[i].
-            int p = upperBound(Y, size_Y, mod-X[i]-1);
- 
-            // If S-X[i] was not in array Y then decrease
-            // p by 1
-            
-            if (p == size_Y || Y[p] != (mod-X[i]-1))
-                p--;
-           p=Math.max(p,0);
-           max=Math.max(max,Y[p]+X[i]);
-        }
-    }
-    return max;
-}
-public int upperBound(int[] array, int length, int value) {
-        int low = 0;
-        int high = length;
-        while (low < high) {
-            final int mid = (low + high) / 2;
-            if (value >= array[mid]) {
-                low = mid + 1;
-            } else {
-                high = mid;
-            }
-        }
-        return low;
+  void dfs(int u){
+    visited1[u]=true;
+    int temp=a[u-1];
+    //System.out.println(" temp called "+temp);
+    if(!visited1[temp])
+      dfs(temp);
+    if(finish[temp]!=0){
+       finish[u]=finish[temp];
+       if(u==finish[u])
+        count[u]=count[temp];
+       else
+        count[u]=count[temp]+1;
+     }
+    else{
+      finish[u]=temp;
+       if(u==finish[u])
+        count[u]=count[temp];
+       else
+        count[u]=count[temp]+1;
     }
 
- 
 
+  }
+ 
 
 
 

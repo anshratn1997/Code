@@ -1,26 +1,17 @@
-
-/*
-add code til 04/10/2018
-Meet in middle is a kind of divide and conquer problem but it is a little bit different from dac.
-This algorithm basically  devide the whole array in two parts only and perform required operation on individually.
-In third step this algorthim sort the one array and second array is taken to select elemnts and search in first array.
-This third step iterate over size of it and finaly max value is gets returned.
-
- problem-- http://codeforces.com/contest/888/problem/E
- 
-*/
 import java.io.*;
 import java.util.*;
 import java.math.*;
 //public 
 class Main{
     //static variable
-    static int mod = (int) 1e9 + 7;
+    static final int mod = (int) 1e9 + 7;
     static final double eps = 1e-6;
     static final double pi = Math.PI;
     static final long inf = Long.MAX_VALUE / 2;
-    static int X[]=new int[2000005];
-    static int[] Y=new int[2000005];
+    static int[] a=null;
+    static  int ans=100001;
+    static int[] prefix=null;
+    static int d=0;
 
     // .......static class
   static class Pair{
@@ -59,17 +50,25 @@ class Main{
         br=new BufferedReader(new InputStreamReader(System.in));
         out=new PrintWriter(System.out);
       int t=1;
-     // t=ii();
+      t=ii();
       while(t-->0){
 
         //........solution start
-        int[] tt=iint();
-        int[] a=iint();
-        int n=tt[0];
-        mod=tt[1];
-        System.out.println(solveSubsetSum(a,n));
+        int nd[]=iint();
+        int n=nd[0];
+        d=nd[1];
+        a=iint();
+        prefix=new int[n];
+        divide(0,a.length-1);
+
+        if(ans==100001)
+          out.println("-1");
+        else
+        out.println(ans);
+      ans=100001;
 
 
+      
 
   
         
@@ -94,60 +93,73 @@ class Main{
 
 
   // ...............required method.
+  void divide(int l,int r){
+    if(l<r){
+        int mid=(l+r)/2;
+        divide(l,mid);
+        divide(mid+1,r);
+        merge(l,mid,r);
+     }
+  }
+  void merge(int l,int mid,int r){
+    ArrayList<Pair> right=new ArrayList<>();
+    int sum=a[l];
+    int el=1;
+    prefix[l]=sum;
+    if(prefix[l]>=d)
+          ans=Math.min(ans,el);
+     for (int i=l+1;i<=mid ;i++ ) {
+       sum+=a[i];
+       el++;
+       prefix[i]=sum;
+       if(prefix[i]>=d)
+          ans=Math.min(ans,el);
+     }
+    sum=a[mid+1];
+    prefix[mid+1]=sum;
+    el=1;
+    if(prefix[mid+1]>=d)
+          ans=Math.min(ans,el);
+    right.add(new Pair(sum,1));
+     for (int i=mid+2;i<=r ;i++ ) {
+        sum+=a[i];
+        el++;
+        prefix[i]=sum;
+        if(prefix[i]>=d)
+          ans=Math.min(ans,el);
+        right.add(new Pair(sum,el));
+     }
+     Collections.sort(right,new mycomparator());
+     int[] mine=new int[right.size()];
+     mine[right.size()-1]=right.get(right.size()-1).Value();
+     for (int i=right.size()-2;i>=0 ;i-- ) {
+        mine[i]=Math.min(mine[i+1],right.get(i).Value());
+     }
+    int ind=0;
+    ind=upperBound(right,right.size(),d-prefix[mid]-1);
+    if(ind!=right.size())
+      ans=Math.min(ans,mine[ind]+mid-l+1);
+     for (int i=l;i<mid ;i++ ) {
+       ind=0;
+       ind=upperBound(right,right.size(),d-prefix[mid]+prefix[i]-1);
+       if(ind!=right.size()){
+       ans=Math.min(ans,mine[ind]+mid-i);
+       
+     }
+       
+  }
 
-void calcsubarray(int a[], int x[], int n, int c)
-{
-    for (int i=0; i<(1<<n); i++)
-    {
-        long  s = 0L;
-        for (int j=0; j<n; j++){
-            if ((i & (1<<j))>0){
-                s += a[j+c];
-                s=s%mod;
-              }
-        }
-        x[i] = (int)(s%mod);
-    }
-}
- 
-int solveSubsetSum(int a[], int n)
-{
-    calcsubarray(a, X, n/2, 0);
-    calcsubarray(a, Y, n-n/2, n/2);
 
-    int max=0;
-
-    int size_X = 1<<(n/2);
-    int size_Y = 1<<(n-n/2);
-
-    Arrays.sort(Y,0,size_Y-1);
-    
-    for (int i=0; i<size_X; i++)
-    {
-        if (X[i] <= mod)
-        {
-            // lower_bound() returns the first address
-            // which has value greater than or equal to
-            // S-X[i].
-            int p = upperBound(Y, size_Y, mod-X[i]-1);
- 
-            // If S-X[i] was not in array Y then decrease
-            // p by 1
-            
-            if (p == size_Y || Y[p] != (mod-X[i]-1))
-                p--;
-           p=Math.max(p,0);
-           max=Math.max(max,Y[p]+X[i]);
-        }
-    }
-    return max;
-}
-public int upperBound(int[] array, int length, int value) {
+     // for (int i=mid+1;i<=r ;i++ ) {
+     //   prefix[i]=prefix[i]+prefix[mid];
+     // }
+  }
+   public  int upperBound(ArrayList<Pair> array, int length, int value) {
         int low = 0;
         int high = length;
         while (low < high) {
             final int mid = (low + high) / 2;
-            if (value >= array[mid]) {
+            if (value >= array.get(mid).Key()) {
                 low = mid + 1;
             } else {
                 high = mid;
@@ -156,13 +168,13 @@ public int upperBound(int[] array, int length, int value) {
         return low;
     }
 
- 
+  
 
 
 
 
   //................end.
-  
+
   
    //..............input method start. 
     int getmax(int a[]){

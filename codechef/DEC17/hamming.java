@@ -1,26 +1,13 @@
-
-/*
-add code til 04/10/2018
-Meet in middle is a kind of divide and conquer problem but it is a little bit different from dac.
-This algorithm basically  devide the whole array in two parts only and perform required operation on individually.
-In third step this algorthim sort the one array and second array is taken to select elemnts and search in first array.
-This third step iterate over size of it and finaly max value is gets returned.
-
- problem-- http://codeforces.com/contest/888/problem/E
- 
-*/
 import java.io.*;
 import java.util.*;
 import java.math.*;
 //public 
 class Main{
     //static variable
-    static int mod = (int) 1e9 + 7;
+    static final int mod = (int) 1e9 + 7;
     static final double eps = 1e-6;
     static final double pi = Math.PI;
     static final long inf = Long.MAX_VALUE / 2;
-    static int X[]=new int[2000005];
-    static int[] Y=new int[2000005];
 
     // .......static class
   static class Pair{
@@ -59,16 +46,130 @@ class Main{
         br=new BufferedReader(new InputStreamReader(System.in));
         out=new PrintWriter(System.out);
       int t=1;
-     // t=ii();
+      t=ii();
       while(t-->0){
 
         //........solution start
-        int[] tt=iint();
+        int n=ii();
         int[] a=iint();
-        int n=tt[0];
-        mod=tt[1];
-        System.out.println(solveSubsetSum(a,n));
+        boolean[] v=new boolean[n];
+        Arrays.fill(v,false);
+        int[][] ind=new int[100001][2];
+        int[] b=new int[n];
+        int[] fre=new int[100001];
+        ArrayList<Integer> one=new ArrayList<>();
+        ArrayList<Integer> db=new ArrayList<>();
+        for (int i=0;i<n ;i++ ) {
+           fre[a[i]]++;
+           if(fre[a[i]]==1)
+             ind[a[i]][0]=i+1;
+           else{
+            ind[a[i]][1]=i+1;
+  
+          }
+          
+        }
+        for(int i=0;i<100001;i++){
+          if(fre[i]==2)
+            db.add(i);
+          if(fre[i]==1)
+            one.add(i);
+        }
+        for (int i=0;i<=db.size()-2;i+=2 ) {
+          int first=db.get(i),sec=db.get(i+1);
+          b[ind[first][0]-1]=sec;v[ind[first][0]-1]=true;
+          b[ind[first][1]-1]=sec;v[ind[first][1]-1]=true;
+          b[ind[sec][0]-1]=first;v[ind[sec][0]-1]=true;
+          b[ind[sec][1]-1]=first;v[ind[sec][1]-1]=true;
+        }
 
+        int ff=0;
+        if(db.size()%2!=0 && db.size()!=0)
+        {
+          // System.out.println("fuck");
+          if(one.size()>=2)
+          {  ff=2;
+             int first=one.get(0),sec=one.get(1);
+             int sz=db.size();
+             b[ind[db.get(sz-1)][0]-1]=first;v[ind[db.get(sz-1)][0]-1]=true;
+             b[ind[db.get(sz-1)][1]-1]=sec;v[ind[db.get(sz-1)][1]-1]=true;
+             b[ind[first][0]-1]=db.get(sz-1);v[ind[first][0]-1]=true;
+             b[ind[sec][0]-1]=db.get(sz-1);v[ind[sec][0]-1]=true;
+          }
+          else if(one.size()==1){
+            int first=one.get(0);
+            int sz=db.size();
+             b[ind[db.get(sz-1)][0]-1]=first;v[ind[db.get(sz-1)][0]-1]=true;
+             b[ind[first][0]-1]=db.get(sz-1);v[ind[first][0]-1]=true;
+          }
+        }
+        for (int i=ff+1;i<one.size() ;i++ ) {
+          // System.out.println("mc");
+           int first=one.get(i-1),sec=one.get(i);
+           b[ind[first][0]-1]=sec;v[ind[first][0]-1]=true;
+        }
+        if(one.size()!=0){
+           int last=one.get(one.size()-1);
+           if(!v[ind[last][0]-1]){
+         
+               b[ind[last][0]-1]=one.get(ff);
+               if(b[ind[last][0]-1]!=a[ind[last][0]-1])
+                v[ind[last][0]-1]=true;
+             }
+
+        }
+        int hm=0,f=0;
+        int[] loc={-1,-1};
+        for (int i=0;i<n ;i++ ) {
+           if(!v[i]){
+             b[i]=a[i];loc[f]=i;f++;
+           }
+           else
+            hm++;
+        }
+        if(hm<n)
+        {
+          boolean done=false;
+          int fk=0;
+          for (int i=0;i<n ;i++ ) {
+             if(i==loc[0]|| i==loc[1])
+              continue;
+             if(a[i]!=b[loc[fk]] && a[loc[fk]]!=b[i])
+             {
+                int temp=b[i];
+                b[i]=b[loc[fk]];
+                b[loc[fk]]=temp;
+                fk++;
+
+                if(fk==f){
+                  done=true;break;
+                }
+             }
+          }
+          if(done)
+          {
+              System.out.println(n);
+              for (int i=0;i<n ;i++ ) {
+                System.out.print(b[i]+" ");
+              }
+              System.out.println();
+              continue;
+          }
+          else{
+
+              System.out.println(hm);
+              for (int i=0;i<n ;i++ ) {
+                System.out.print(b[i]+" ");
+              }
+              System.out.println();
+              continue;
+          }
+        }
+        System.out.println(hm);
+        for (int i=0;i<n ;i++ ) {
+          System.out.print(b[i]+" ");
+        }
+        System.out.println();
 
 
   
@@ -94,69 +195,6 @@ class Main{
 
 
   // ...............required method.
-
-void calcsubarray(int a[], int x[], int n, int c)
-{
-    for (int i=0; i<(1<<n); i++)
-    {
-        long  s = 0L;
-        for (int j=0; j<n; j++){
-            if ((i & (1<<j))>0){
-                s += a[j+c];
-                s=s%mod;
-              }
-        }
-        x[i] = (int)(s%mod);
-    }
-}
- 
-int solveSubsetSum(int a[], int n)
-{
-    calcsubarray(a, X, n/2, 0);
-    calcsubarray(a, Y, n-n/2, n/2);
-
-    int max=0;
-
-    int size_X = 1<<(n/2);
-    int size_Y = 1<<(n-n/2);
-
-    Arrays.sort(Y,0,size_Y-1);
-    
-    for (int i=0; i<size_X; i++)
-    {
-        if (X[i] <= mod)
-        {
-            // lower_bound() returns the first address
-            // which has value greater than or equal to
-            // S-X[i].
-            int p = upperBound(Y, size_Y, mod-X[i]-1);
- 
-            // If S-X[i] was not in array Y then decrease
-            // p by 1
-            
-            if (p == size_Y || Y[p] != (mod-X[i]-1))
-                p--;
-           p=Math.max(p,0);
-           max=Math.max(max,Y[p]+X[i]);
-        }
-    }
-    return max;
-}
-public int upperBound(int[] array, int length, int value) {
-        int low = 0;
-        int high = length;
-        while (low < high) {
-            final int mid = (low + high) / 2;
-            if (value >= array[mid]) {
-                low = mid + 1;
-            } else {
-                high = mid;
-            }
-        }
-        return low;
-    }
-
- 
 
 
 

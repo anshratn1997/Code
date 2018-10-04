@@ -1,26 +1,13 @@
-
-/*
-add code til 04/10/2018
-Meet in middle is a kind of divide and conquer problem but it is a little bit different from dac.
-This algorithm basically  devide the whole array in two parts only and perform required operation on individually.
-In third step this algorthim sort the one array and second array is taken to select elemnts and search in first array.
-This third step iterate over size of it and finaly max value is gets returned.
-
- problem-- http://codeforces.com/contest/888/problem/E
- 
-*/
 import java.io.*;
 import java.util.*;
 import java.math.*;
 //public 
-class Main{
+class edu11{
     //static variable
-    static int mod = (int) 1e9 + 7;
+    static final int mod = (int) 1e9 + 7;
     static final double eps = 1e-6;
     static final double pi = Math.PI;
     static final long inf = Long.MAX_VALUE / 2;
-    static int X[]=new int[2000005];
-    static int[] Y=new int[2000005];
 
     // .......static class
   static class Pair{
@@ -49,29 +36,64 @@ class Main{
     BufferedReader br;
     PrintWriter out;
     public static void main(String[] args) {
-    new Main().main1();
+    new edu11().main1();
  
   }
   void main1()
   {
     try{
-       
-        br=new BufferedReader(new InputStreamReader(System.in));
-        out=new PrintWriter(System.out);
+     br=new BufferedReader(new InputStreamReader(System.in));
+     out=new PrintWriter(System.out);
       int t=1;
-     // t=ii();
+      t=ii();
       while(t-->0){
 
         //........solution start
-        int[] tt=iint();
-        int[] a=iint();
-        int n=tt[0];
-        mod=tt[1];
-        System.out.println(solveSubsetSum(a,n));
+        String line=si();
+        String ll[]=line.split(" ");
+        char[] dic={'A','H','I','M','O','T','U','V','W','X','Y'};
+        HashMap<Character,Integer> map1=new HashMap<>();
+        for(int i=0;i<11;i++){
+           map1.put(dic[i],i+1);
+        }
+        long k=Integer.parseInt(ll[0]);
+        String g=ll[1];
+        long n=g.length();
+        long ind=0;
+        long count=0;
+        while(n>0){
+              n--;
+           Character ch=g.charAt((int)n);
+           ind=ind+map1.get(ch)*(long)Math.pow(11,count);
+           count++;
+        }
+        //System.out.println("after convert "+ind);
+        ind=ind+k;
+        long temp=ind;
+        int len=0;
+        if(ind%11==0){
+
+        }
+       
+        while(temp>0){
+           len++;
+           temp/=11;
+
+        }
+        
+        //System.out.println("len of String "+len);
+        StringBuffer sb=new StringBuffer("");
+        for (int i=len-1;i>=0 ;i-- ) {
+          long fuck=(long)Math.pow(11,i);
+          long index=ind/fuck;
+          ind=ind-fuck*index;
+          sb.append(dic[(int)index-1]);
+        }
+        System.out.println(sb.toString());
+
+       
 
 
-
-  
         
 
 
@@ -94,55 +116,7 @@ class Main{
 
 
   // ...............required method.
-
-void calcsubarray(int a[], int x[], int n, int c)
-{
-    for (int i=0; i<(1<<n); i++)
-    {
-        long  s = 0L;
-        for (int j=0; j<n; j++){
-            if ((i & (1<<j))>0){
-                s += a[j+c];
-                s=s%mod;
-              }
-        }
-        x[i] = (int)(s%mod);
-    }
-}
- 
-int solveSubsetSum(int a[], int n)
-{
-    calcsubarray(a, X, n/2, 0);
-    calcsubarray(a, Y, n-n/2, n/2);
-
-    int max=0;
-
-    int size_X = 1<<(n/2);
-    int size_Y = 1<<(n-n/2);
-
-    Arrays.sort(Y,0,size_Y-1);
-    
-    for (int i=0; i<size_X; i++)
-    {
-        if (X[i] <= mod)
-        {
-            // lower_bound() returns the first address
-            // which has value greater than or equal to
-            // S-X[i].
-            int p = upperBound(Y, size_Y, mod-X[i]-1);
- 
-            // If S-X[i] was not in array Y then decrease
-            // p by 1
-            
-            if (p == size_Y || Y[p] != (mod-X[i]-1))
-                p--;
-           p=Math.max(p,0);
-           max=Math.max(max,Y[p]+X[i]);
-        }
-    }
-    return max;
-}
-public int upperBound(int[] array, int length, int value) {
+  public  int upperBound(int[] array, int length, int value) {
         int low = 0;
         int high = length;
         while (low < high) {
@@ -155,8 +129,25 @@ public int upperBound(int[] array, int length, int value) {
         }
         return low;
     }
+    int BinaryS(ArrayList<Integer> temp,int key){
+        int l=0,r=temp.size()-1;
+        int mid=0;
+        while(l<=r){
+           mid=(l+r)/2;
+          // System.out.println(mid);
+          if(key>temp.get(mid))
+            r=mid-1;
+          else
+            l=mid+1;
+        }
+          //System.out.println(l+" "+r);
 
- 
+        return (l+r+1)/2;
+
+    }
+  StringBuffer lele(long num){
+     
+  }
 
 
 

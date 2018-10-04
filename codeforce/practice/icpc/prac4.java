@@ -1,26 +1,13 @@
-
-/*
-add code til 04/10/2018
-Meet in middle is a kind of divide and conquer problem but it is a little bit different from dac.
-This algorithm basically  devide the whole array in two parts only and perform required operation on individually.
-In third step this algorthim sort the one array and second array is taken to select elemnts and search in first array.
-This third step iterate over size of it and finaly max value is gets returned.
-
- problem-- http://codeforces.com/contest/888/problem/E
- 
-*/
 import java.io.*;
 import java.util.*;
 import java.math.*;
 //public 
 class Main{
     //static variable
-    static int mod = (int) 1e9 + 7;
+    static final int mod = (int) 1e9 + 7;
     static final double eps = 1e-6;
     static final double pi = Math.PI;
     static final long inf = Long.MAX_VALUE / 2;
-    static int X[]=new int[2000005];
-    static int[] Y=new int[2000005];
 
     // .......static class
   static class Pair{
@@ -55,23 +42,37 @@ class Main{
   void main1()
   {
     try{
-       
-        br=new BufferedReader(new InputStreamReader(System.in));
-        out=new PrintWriter(System.out);
+     br=new BufferedReader(new InputStreamReader(System.in));
+     out=new PrintWriter(System.out);
       int t=1;
-     // t=ii();
+      t=ii();
       while(t-->0){
 
         //........solution start
-        int[] tt=iint();
-        int[] a=iint();
-        int n=tt[0];
-        mod=tt[1];
-        System.out.println(solveSubsetSum(a,n));
 
+       int n=ii();
+       int[] ai=new int[n];
+       int[] bi=new int[n];
+       
+       for (int i=0;i<n ;i++ ) {
+         int[] tt=iint();
+         ai[i]=tt[0];bi[i]=tt[1];
+       }
+       long ans=0;
+       Arrays.sort(ai);
+       if(n==1){
+        out.println("0");
+        continue;}
+        int a[]=new int[n+1];
+        int last=-1;
+       for(int i=0;i<n ;i++ ) {
+        int lower=GetLeftPosition(ai,-1,n-1,bi[i]);
+        int upper=GetRightPosition(ai,0,n,bi[i]);
+        if(ai[lower]==b[i] && ai[upper]==b[i])
+          ans=ans+upper-lower+1;
+       }
+        out.println(ans);
 
-
-  
         
 
 
@@ -94,70 +95,38 @@ class Main{
 
 
   // ...............required method.
-
-void calcsubarray(int a[], int x[], int n, int c)
+int GetRightPosition(int A[], int l, int r, int key)
 {
-    for (int i=0; i<(1<<n); i++)
-    {
-        long  s = 0L;
-        for (int j=0; j<n; j++){
-            if ((i & (1<<j))>0){
-                s += a[j+c];
-                s=s%mod;
-              }
-        }
-        x[i] = (int)(s%mod);
-    }
-}
+    int m;
  
-int solveSubsetSum(int a[], int n)
+    while( r - l > 1 )
+    {
+        m = l + (r - l)/2;
+ 
+        if( A[m] <= key )
+            l = m;
+        else
+            r = m;
+    }
+ 
+    return l;
+}
+int GetLeftPosition(int A[], int l, int r, int key)
 {
-    calcsubarray(a, X, n/2, 0);
-    calcsubarray(a, Y, n-n/2, n/2);
-
-    int max=0;
-
-    int size_X = 1<<(n/2);
-    int size_Y = 1<<(n-n/2);
-
-    Arrays.sort(Y,0,size_Y-1);
-    
-    for (int i=0; i<size_X; i++)
+    int m;
+ 
+    while( r - l > 1 )
     {
-        if (X[i] <= mod)
-        {
-            // lower_bound() returns the first address
-            // which has value greater than or equal to
-            // S-X[i].
-            int p = upperBound(Y, size_Y, mod-X[i]-1);
+        m = l + (r - l)/2;
  
-            // If S-X[i] was not in array Y then decrease
-            // p by 1
-            
-            if (p == size_Y || Y[p] != (mod-X[i]-1))
-                p--;
-           p=Math.max(p,0);
-           max=Math.max(max,Y[p]+X[i]);
-        }
+        if( A[m] >= key )
+            r = m;
+        else
+            l = m;
     }
-    return max;
+ 
+    return r;
 }
-public int upperBound(int[] array, int length, int value) {
-        int low = 0;
-        int high = length;
-        while (low < high) {
-            final int mid = (low + high) / 2;
-            if (value >= array[mid]) {
-                low = mid + 1;
-            } else {
-                high = mid;
-            }
-        }
-        return low;
-    }
-
- 
-
 
 
 

@@ -1,0 +1,21 @@
+//binary search to get index where element is strictly  less than the key.
+//array should be in descending order
+//10 8 6 4 2 -1  
+//key 7,index=2,key=-2 index=6,key=11 index=0,key-4,index=;
+
+
+ int BinaryS(ArrayList<Integer> temp,int key){
+	  	  int l=0,r=temp.size()-1;
+	  	  int mid=0;
+	  	  while(l<=r){
+	  	  	 mid=(l+r)/2;
+	  	  	// System.out.println(mid);
+	  	  	if(key>temp.get(mid))
+	  	  		r=mid-1;
+	  	  	else
+	  	  		l=mid+1;
+	  	  }
+          //System.out.println(l+" "+r);
+
+	  	  return (l+r+1)/2;
+}

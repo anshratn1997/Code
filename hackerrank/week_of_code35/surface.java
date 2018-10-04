@@ -1,48 +1,16 @@
-
-/*
-add code til 04/10/2018
-Meet in middle is a kind of divide and conquer problem but it is a little bit different from dac.
-This algorithm basically  devide the whole array in two parts only and perform required operation on individually.
-In third step this algorthim sort the one array and second array is taken to select elemnts and search in first array.
-This third step iterate over size of it and finaly max value is gets returned.
-
- problem-- http://codeforces.com/contest/888/problem/E
- 
-*/
 import java.io.*;
 import java.util.*;
 import java.math.*;
 //public 
 class Main{
     //static variable
-    static int mod = (int) 1e9 + 7;
+    static final int mod = (int) 1e9 + 7;
     static final double eps = 1e-6;
     static final double pi = Math.PI;
     static final long inf = Long.MAX_VALUE / 2;
-    static int X[]=new int[2000005];
-    static int[] Y=new int[2000005];
 
     // .......static class
-  static class Pair{
-      int key,value;
-      Pair(int key,int value){
-        this.key=key;
-        this.value=value;
-      }
-      int Key(){
-        return key;
-      }
-      int Value(){
-        return value;
-      }
-  }
-  static class mycomparator implements Comparator<Pair>{
-     @Override
-     public int compare(Pair o1,Pair o2){
-      Integer key1=o1.Key(),key2=o2.Key();
-          return key1.compareTo(key2);
-     }
-  }
+  
     
 //.............staic class end.
   
@@ -62,14 +30,36 @@ class Main{
      // t=ii();
       while(t-->0){
 
-        //........solution start
-        int[] tt=iint();
-        int[] a=iint();
-        int n=tt[0];
-        mod=tt[1];
-        System.out.println(solveSubsetSum(a,n));
+        //........solution start herr
 
-
+        int tt[]=iint();
+        int n=tt[0],m=tt[1];
+         long ans=n*2L*m;
+        int[][] a=iim(n,m);
+        int row=0,col=0;
+        for (int i=0;i<m ;i++ ) {
+              col+=col_max(a,i,n);
+        }
+        for (int i=0;i<n ;i++ ) {
+           row+=row_max(a,i,m);
+        }
+        
+        ans+=2*row;
+        ans+=2*col;
+        //int[][] a={{1},{2},{1},{3},{2},{4},{1},{3},{2}};
+         // int[][] a={{4},{3},{2},{1}};
+         // System.out.println(depth_col(a,0,4));
+       int total=0;
+      for (int i=0;i<n ;i++ ) {
+          int temp=depth_row(a,i,m);
+          total+=(2*temp);
+      }
+      for (int i=0;i<m ;i++ ) {
+          int temp=depth_col(a,i,n);
+          total+=(2*temp);
+      }
+      ans+=total;
+      System.out.println(ans);
 
   
         
@@ -94,69 +84,78 @@ class Main{
 
 
   // ...............required method.
+  int depth_row(int[][] a,int i,int m){
+       
+       int[] ma=new int[m];
+       ma[m-1]=a[i][m-1];
+      
+       for (int j=m-2;j>=0 ;j-- ) {
+          if(a[i][j]>ma[j+1])
+             ma[j]=a[i][j];
+           else
+            ma[j]=ma[j+1];
+       }
+       int sum=0;
+       int max=0;
+       if(m>=2)
+       max=Math.min(a[i][0],ma[1]);
+       
+       for (int j=1;j<m-1;j++ ) {
+          
+          if(max>a[i][j])
+          {
+            sum+=(max-a[i][j]);            
+           
+          }
+        max=Math.min(ma[j+1],a[i][j]);
+        //System.out.println(sum+" "+max);
 
-void calcsubarray(int a[], int x[], int n, int c)
-{
-    for (int i=0; i<(1<<n); i++)
-    {
-        long  s = 0L;
-        for (int j=0; j<n; j++){
-            if ((i & (1<<j))>0){
-                s += a[j+c];
-                s=s%mod;
-              }
-        }
-        x[i] = (int)(s%mod);
-    }
-}
- 
-int solveSubsetSum(int a[], int n)
-{
-    calcsubarray(a, X, n/2, 0);
-    calcsubarray(a, Y, n-n/2, n/2);
+       }
+        return sum;
+  }
+  int depth_col(int[][] a,int j,int m){
+       
+       int[] ma=new int[m];
+       ma[m-1]=a[m-1][j];
+      
+       for (int i=m-2;i>=0 ;i-- ) {
+          if(a[i][j]>ma[i+1])
+             ma[i]=a[i][j];
+           else
+            ma[i]=ma[i+1];
+       }
+       int sum=0;
+       int max=0;
+       if(m>=2)
+       max=Math.min(a[0][j],ma[1]);
+       for (int i=1;i<m-1;i++ ) {
+          
+          if(max>a[i][j])
+          {
+            sum+=(max-a[i][j]);            
+           
+          }
+        max=Math.min(ma[i+1],a[i][j]);
+        //System.out.println(sum+" "+max);
 
-    int max=0;
+       }
+        return sum;
+  }
+  int row_max(int[][] a,int i,int n){
+     int max=0;
+     for (int j=0;j<n ;j++ ) {
+        max=Math.max(a[i][j],max);
+     }
+     return max;
+  }
+  int col_max(int[][] a,int j,int n){
+     int max=0;
+     for (int i=0;i<n ;i++ ) {
+        max=Math.max(a[i][j],max);
+     }
+     return max;
+  }
 
-    int size_X = 1<<(n/2);
-    int size_Y = 1<<(n-n/2);
-
-    Arrays.sort(Y,0,size_Y-1);
-    
-    for (int i=0; i<size_X; i++)
-    {
-        if (X[i] <= mod)
-        {
-            // lower_bound() returns the first address
-            // which has value greater than or equal to
-            // S-X[i].
-            int p = upperBound(Y, size_Y, mod-X[i]-1);
- 
-            // If S-X[i] was not in array Y then decrease
-            // p by 1
-            
-            if (p == size_Y || Y[p] != (mod-X[i]-1))
-                p--;
-           p=Math.max(p,0);
-           max=Math.max(max,Y[p]+X[i]);
-        }
-    }
-    return max;
-}
-public int upperBound(int[] array, int length, int value) {
-        int low = 0;
-        int high = length;
-        while (low < high) {
-            final int mid = (low + high) / 2;
-            if (value >= array[mid]) {
-                low = mid + 1;
-            } else {
-                high = mid;
-            }
-        }
-        return low;
-    }
-
- 
 
 
 

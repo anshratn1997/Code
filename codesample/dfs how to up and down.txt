@@ -1,0 +1,26 @@
+//for going up operation should be written just down the visit= true;
+//for goind down the operation shoud be written  just ending of for loop'
+
+
+
+void dfs(int u,int k){
+		visit[u]=true;
+		
+		int sz=s_color[color[u]].size();
+		if(sz<k)
+			ans[u]=-1;
+		else{
+		
+			ans[u]=(int)s_color[color[u]].get(sz-k);	
+		}
+		s_color[color[u]].add(u);
+		
+		for(int i=0;i<graph[u].size();i++){
+			int v=(int )graph[u].get(i);
+			if(!visit[v]){
+				dfs(v,k);
+			}
+		}
+		s_color[color[u]].poll();
+
+	}

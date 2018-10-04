@@ -1,48 +1,44 @@
-
-/*
-add code til 04/10/2018
-Meet in middle is a kind of divide and conquer problem but it is a little bit different from dac.
-This algorithm basically  devide the whole array in two parts only and perform required operation on individually.
-In third step this algorthim sort the one array and second array is taken to select elemnts and search in first array.
-This third step iterate over size of it and finaly max value is gets returned.
-
- problem-- http://codeforces.com/contest/888/problem/E
- 
-*/
 import java.io.*;
 import java.util.*;
 import java.math.*;
 //public 
 class Main{
     //static variable
-    static int mod = (int) 1e9 + 7;
+    static final int mod = (int) 1e9 + 7;
     static final double eps = 1e-6;
     static final double pi = Math.PI;
     static final long inf = Long.MAX_VALUE / 2;
-    static int X[]=new int[2000005];
-    static int[] Y=new int[2000005];
+    static int max=1000001;
+    static Node[] tree1=new Node[2*max];
+    static int[] a=null;
 
     // .......static class
-  static class Pair{
-      int key,value;
-      Pair(int key,int value){
-        this.key=key;
-        this.value=value;
-      }
-      int Key(){
-        return key;
-      }
-      int Value(){
-        return value;
-      }
-  }
-  static class mycomparator implements Comparator<Pair>{
-     @Override
-     public int compare(Pair o1,Pair o2){
-      Integer key1=o1.Key(),key2=o2.Key();
-          return key1.compareTo(key2);
+  static class Node{
+     long total;
+     int len,left,right;
+     Node(){
+      total=0;len=0;left=0;right=0;
      }
+     Node(int value){
+      left=value;right=value;total=value;
+      len=1;
+     }
+    long Total(){return total;}
+     int Len(){return len;}
+    int Left(){return left;}
+    int Right(){return right;}
+
+    void merge(Node l,Node r){
+      total+=(Math.max(Math.max(l.Total(),r.Total()),l.Right()+r.Left()));
+      len=l.Len()+r.Len();
+      left=l.Left();
+      right=r.Right();
+      if(l.Left() == l.Len()) left += r.Left();
+      if(r.Right() == r.Len()) right += l.Right();
+
+    }
   }
+  
     
 //.............staic class end.
   
@@ -59,15 +55,39 @@ class Main{
         br=new BufferedReader(new InputStreamReader(System.in));
         out=new PrintWriter(System.out);
       int t=1;
-     // t=ii();
+      //t=ii();
       while(t-->0){
 
         //........solution start
-        int[] tt=iint();
-        int[] a=iint();
-        int n=tt[0];
-        mod=tt[1];
-        System.out.println(solveSubsetSum(a,n));
+        int tt[]=iint();
+        int n=tt[0],m=tt[1];
+        String st=si();
+        a=new int[n];
+        for (int i=0;i<n ;i++ ) {
+          a[i]=st.charAt(i)-'0';
+        }
+        // System.out.println();
+
+        build1(1,0,n-1);
+        for (int i=0;i<m ;i++ ) {
+            int temp[]=iint();
+            if(temp[0]==1){
+            out.println(tree1[1].Total());
+            }
+            else{
+              update1(1,0,n-1,temp[1]-1,1);
+              // for (int l=1;l<=9;l++ ) {
+              //   System.out.println(tree1[l].Total()+" "+tree1[l].Left()+" "+tree1[l].Right());
+              // }
+            }
+            
+        }
+
+       
+
+
+
+
 
 
 
@@ -95,71 +115,48 @@ class Main{
 
   // ...............required method.
 
-void calcsubarray(int a[], int x[], int n, int c)
-{
-    for (int i=0; i<(1<<n); i++)
-    {
-        long  s = 0L;
-        for (int j=0; j<n; j++){
-            if ((i & (1<<j))>0){
-                s += a[j+c];
-                s=s%mod;
-              }
-        }
-        x[i] = (int)(s%mod);
+
+void build1(int id, int lo, int hi){
+    if(lo == hi){
+      tree1[id]=new Node(a[lo]);
+      return;
     }
-}
- 
-int solveSubsetSum(int a[], int n)
-{
-    calcsubarray(a, X, n/2, 0);
-    calcsubarray(a, Y, n-n/2, n/2);
+    int mid = (lo+hi)/2;
+    build1(2*id,lo,mid);
+    build1(2*id+1,mid+1,hi);
+    Node fuck=new Node();
+    fuck.merge(tree1[2*id],tree1[2*id+1]);
+    tree1[id]=fuck;
+  }
 
-    int max=0;
-
-    int size_X = 1<<(n/2);
-    int size_Y = 1<<(n-n/2);
-
-    Arrays.sort(Y,0,size_Y-1);
-    
-    for (int i=0; i<size_X; i++)
-    {
-        if (X[i] <= mod)
-        {
-            // lower_bound() returns the first address
-            // which has value greater than or equal to
-            // S-X[i].
-            int p = upperBound(Y, size_Y, mod-X[i]-1);
- 
-            // If S-X[i] was not in array Y then decrease
-            // p by 1
-            
-            if (p == size_Y || Y[p] != (mod-X[i]-1))
-                p--;
-           p=Math.max(p,0);
-           max=Math.max(max,Y[p]+X[i]);
-        }
+void update1(int id, int lo, int hi, int pos, int val){
+    if(lo==hi && lo==pos){
+      a[pos] = val;
+      tree1[id]=new Node(val);
+      return;
     }
-    return max;
-}
-public int upperBound(int[] array, int length, int value) {
-        int low = 0;
-        int high = length;
-        while (low < high) {
-            final int mid = (low + high) / 2;
-            if (value >= array[mid]) {
-                low = mid + 1;
-            } else {
-                high = mid;
-            }
-        }
-        return low;
+    int mid = (lo+hi)/2;
+    if(pos <= mid) update1(2*id,lo,mid, pos, val);
+    else update1(2*id+1,mid+1,hi, pos, val);
+    Node fuck=new Node();
+    fuck.merge(tree1[2*id],tree1[2*id+1]);
+    tree1[id]=fuck;
+  }
+  Node query1(int id, int lo, int hi, int x, int y){
+    if(lo==x && hi==y){
+      return tree1[id];
     }
+    int  mid = (lo+hi)/2;
+    if(y <= mid) return query1(2*id,lo,mid, x, y);
+    else if(x>mid) return query1(2*id+1,mid+1,hi, x, y);
+    Node Ln = query1(2*id,lo,mid, x, mid);
+    Node Rn = query1(2*id+1,mid+1,hi, mid+1, y);
+    Node res=new Node();
+    res.merge(Ln,Rn);
+    return res;
+  }
 
- 
-
-
-
+  
 
   //................end.
   

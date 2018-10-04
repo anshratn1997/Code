@@ -1,26 +1,14 @@
-
-/*
-add code til 04/10/2018
-Meet in middle is a kind of divide and conquer problem but it is a little bit different from dac.
-This algorithm basically  devide the whole array in two parts only and perform required operation on individually.
-In third step this algorthim sort the one array and second array is taken to select elemnts and search in first array.
-This third step iterate over size of it and finaly max value is gets returned.
-
- problem-- http://codeforces.com/contest/888/problem/E
- 
-*/
 import java.io.*;
 import java.util.*;
 import java.math.*;
 //public 
 class Main{
     //static variable
-    static int mod = (int) 1e9 + 7;
+    static final int mod = (int) 1e9 + 7;
     static final double eps = 1e-6;
     static final double pi = Math.PI;
     static final long inf = Long.MAX_VALUE / 2;
-    static int X[]=new int[2000005];
-    static int[] Y=new int[2000005];
+    static ArrayList<Pair> al=new ArrayList<>();
 
     // .......static class
   static class Pair{
@@ -63,11 +51,45 @@ class Main{
       while(t-->0){
 
         //........solution start
-        int[] tt=iint();
-        int[] a=iint();
-        int n=tt[0];
-        mod=tt[1];
-        System.out.println(solveSubsetSum(a,n));
+        int n=ii();
+        int[] w=iint();
+        int l[]=iint();
+        int[] r=iint();
+        long ans[]=new long[n+1];
+        for (int i=0;i<n ;i++ ) {
+          int left=i-l[i]-1;
+          left=Math.max(left,0);
+          al.add(new Pair(left,0));
+        }
+        ans[n-1]=w[n-1];
+        long max=w[n-1];
+        for (int i=n-2;i>=0 ;i-- ) {
+            
+            long temp=w[i];
+            int right=i+r[i]+1;
+            ans[i]=temp;
+            long lm=0L;
+            for (int j=right;j<n ;j++ ) {
+                int left=j-l[j]-1;
+                if(i<=left)
+                {
+                 lm=Math.max(lm,ans[i]+ans[j]);
+                }
+
+            }
+            ans[i]=Math.max(lm,ans[i]);
+           
+
+
+        }
+        
+        for (int i=0;i<n ;i++ ) {
+           System.out.print(ans[i]+" ");
+           max=Math.max(max,ans[i]);
+
+        }
+       // System.out.println();
+        System.out.println(max);
 
 
 
@@ -94,60 +116,13 @@ class Main{
 
 
   // ...............required method.
-
-void calcsubarray(int a[], int x[], int n, int c)
-{
-    for (int i=0; i<(1<<n); i++)
-    {
-        long  s = 0L;
-        for (int j=0; j<n; j++){
-            if ((i & (1<<j))>0){
-                s += a[j+c];
-                s=s%mod;
-              }
-        }
-        x[i] = (int)(s%mod);
-    }
-}
- 
-int solveSubsetSum(int a[], int n)
-{
-    calcsubarray(a, X, n/2, 0);
-    calcsubarray(a, Y, n-n/2, n/2);
-
-    int max=0;
-
-    int size_X = 1<<(n/2);
-    int size_Y = 1<<(n-n/2);
-
-    Arrays.sort(Y,0,size_Y-1);
-    
-    for (int i=0; i<size_X; i++)
-    {
-        if (X[i] <= mod)
-        {
-            // lower_bound() returns the first address
-            // which has value greater than or equal to
-            // S-X[i].
-            int p = upperBound(Y, size_Y, mod-X[i]-1);
- 
-            // If S-X[i] was not in array Y then decrease
-            // p by 1
-            
-            if (p == size_Y || Y[p] != (mod-X[i]-1))
-                p--;
-           p=Math.max(p,0);
-           max=Math.max(max,Y[p]+X[i]);
-        }
-    }
-    return max;
-}
-public int upperBound(int[] array, int length, int value) {
+public  int upperBound(int length, int value) {
         int low = 0;
         int high = length;
         while (low < high) {
             final int mid = (low + high) / 2;
-            if (value >= array[mid]) {
+            Pair p=al.get(mid);
+            if (value >=p.Key()) {
                 low = mid + 1;
             } else {
                 high = mid;
@@ -155,8 +130,6 @@ public int upperBound(int[] array, int length, int value) {
         }
         return low;
     }
-
- 
 
 
 

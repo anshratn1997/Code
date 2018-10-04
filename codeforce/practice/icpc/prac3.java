@@ -1,26 +1,14 @@
-
-/*
-add code til 04/10/2018
-Meet in middle is a kind of divide and conquer problem but it is a little bit different from dac.
-This algorithm basically  devide the whole array in two parts only and perform required operation on individually.
-In third step this algorthim sort the one array and second array is taken to select elemnts and search in first array.
-This third step iterate over size of it and finaly max value is gets returned.
-
- problem-- http://codeforces.com/contest/888/problem/E
- 
-*/
 import java.io.*;
 import java.util.*;
 import java.math.*;
 //public 
 class Main{
     //static variable
-    static int mod = (int) 1e9 + 7;
+    static final int mod = (int) 1e9 + 7;
     static final double eps = 1e-6;
     static final double pi = Math.PI;
     static final long inf = Long.MAX_VALUE / 2;
-    static int X[]=new int[2000005];
-    static int[] Y=new int[2000005];
+    static int count=0;
 
     // .......static class
   static class Pair{
@@ -40,7 +28,7 @@ class Main{
      @Override
      public int compare(Pair o1,Pair o2){
       Integer key1=o1.Key(),key2=o2.Key();
-          return key1.compareTo(key2);
+          return key2.compareTo(key1);
      }
   }
     
@@ -55,23 +43,21 @@ class Main{
   void main1()
   {
     try{
-       
-        br=new BufferedReader(new InputStreamReader(System.in));
-        out=new PrintWriter(System.out);
+     br=new BufferedReader(new InputStreamReader(System.in));
+     out=new PrintWriter(System.out);
       int t=1;
      // t=ii();
       while(t-->0){
 
         //........solution start
-        int[] tt=iint();
-        int[] a=iint();
-        int n=tt[0];
-        mod=tt[1];
-        System.out.println(solveSubsetSum(a,n));
+        String txt=si();
+        String pat=si();
+        KMPSearch(pat,txt);
+        System.out.println(count);
 
 
+        
 
-  
         
 
 
@@ -94,69 +80,90 @@ class Main{
 
 
   // ...............required method.
-
-void calcsubarray(int a[], int x[], int n, int c)
-{
-    for (int i=0; i<(1<<n); i++)
+  void KMPSearch(String pt, String tt)
     {
-        long  s = 0L;
-        for (int j=0; j<n; j++){
-            if ((i & (1<<j))>0){
-                s += a[j+c];
-                s=s%mod;
-              }
-        }
-        x[i] = (int)(s%mod);
-    }
-}
+        int M = pt.length();
+        int N = tt.length();
+        char pat[]=pt.toCharArray();
+        char txt[]=tt.toCharArray();
  
-int solveSubsetSum(int a[], int n)
-{
-    calcsubarray(a, X, n/2, 0);
-    calcsubarray(a, Y, n-n/2, n/2);
-
-    int max=0;
-
-    int size_X = 1<<(n/2);
-    int size_Y = 1<<(n-n/2);
-
-    Arrays.sort(Y,0,size_Y-1);
-    
-    for (int i=0; i<size_X; i++)
-    {
-        if (X[i] <= mod)
+        // create lps[] that will hold the longest
+        // prefix suffix values for pattern
+        int lps[] = new int[M];
+        int j = 0;  // index for pat[]
+ 
+        // Preprocess the pattern (calculate lps[]
+        // array)
+        computeLPSArray(pat,M,lps);
+ 
+        int i = 0;  // index for txt[]
+        while (i < N)
         {
-            // lower_bound() returns the first address
-            // which has value greater than or equal to
-            // S-X[i].
-            int p = upperBound(Y, size_Y, mod-X[i]-1);
+            if (txt[i]==pat[j] || txt[i]=='?')
+            {
+                
+                j++;
+                i++;
+
+               //  System.out.println(i+" "+j);
+            }
+            if (j == M)
+            {
+                count++;
+               // System.out.println("occurred "+i);
+
+                j = lps[j-1];
+            }
  
-            // If S-X[i] was not in array Y then decrease
-            // p by 1
-            
-            if (p == size_Y || Y[p] != (mod-X[i]-1))
-                p--;
-           p=Math.max(p,0);
-           max=Math.max(max,Y[p]+X[i]);
-        }
-    }
-    return max;
-}
-public int upperBound(int[] array, int length, int value) {
-        int low = 0;
-        int high = length;
-        while (low < high) {
-            final int mid = (low + high) / 2;
-            if (value >= array[mid]) {
-                low = mid + 1;
-            } else {
-                high = mid;
+            // mismatch after j matches
+            else if (i < N && (pat[j] != txt[i] && txt[i]!='?' ))
+            {
+                // Do not match lps[0..lps[j-1]] characters,
+                // they will match anyway
+                if (j != 0)
+                    j = lps[j-1];
+                else
+                    i = i+1;
             }
         }
-        return low;
     }
-
  
+    void computeLPSArray(char[] pat, int M, int lps[])
+    {
+        // length of the previous longest prefix suffix
+        int len = 0;
+        int i = 1;
+        lps[0] = 0;  // lps[0] is always 0
+ 
+        // the loop calculates lps[i] for i = 1 to M-1
+        while (i < M)
+        {
+            if (pat[i] == pat[len])
+            {
+                len++;
+                lps[i] = len;
+                i++;
+            }
+            else  // (pat[i] != pat[len])
+            {
+                // This is tricky. Consider the example.
+                // AAACAAAA and i = 7. The idea is similar 
+                // to search step.
+                if (len != 0)
+                {
+                    len = lps[len-1];
+ 
+                    // Also, note that we do not increment
+                    // i here
+                }
+                else  // if (len == 0)
+                {
+                    lps[i] = len;
+                    i++;
+                }
+            }
+        }
+    }
 
 
 
